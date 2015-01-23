@@ -7,7 +7,7 @@ from setuptools import find_packages
 
 base_dir = os.path.dirname(__file__)
 setup(
-    name='Django-Scaffold',
+    name='django-scaffold-toolkit',
     version='0.0.1',
     author='Xu Yuan',
     author_email='ankh2008@gmail.com',
