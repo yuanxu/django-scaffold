@@ -2,3 +2,5 @@ env/
 .idea/
 .pyc
 __pycache__/
+dist/
+Django_Scaffold.egg-info/

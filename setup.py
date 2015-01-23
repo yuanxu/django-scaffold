@@ -1,0 +1,33 @@
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+import os
+from setuptools import find_packages
+
+base_dir = os.path.dirname(__file__)
+setup(
+    name='Django-Scaffold',
+    version='0.0.1',
+    author='Xu Yuan',
+    author_email='ankh2008@gmail.com',
+    packages=['scaffold'] + ['scaffold.%s' % item for item in find_packages("scaffold")],
+    url="https://github.com/yuanxu/django-scaffold",
+    license='LICENSE.txt',
+    description='Django开发中一组常用工具。包括表单生成，验证，富文本编辑器，useragent检测等等',
+    include_package_data=True,
+    long_description=open(os.path.join(base_dir, 'README.md'), encoding='utf-8').read(),
+    install_requires=['requests', 'django-braces'],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Operating System :: OS Independent',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Utilities',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+    ],
+)
