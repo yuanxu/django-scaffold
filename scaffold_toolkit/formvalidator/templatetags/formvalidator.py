@@ -6,11 +6,10 @@ from django.conf import settings
 from django.forms import forms
 from django.forms import fields
 from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator
-from django.utils import translation
 from django.utils.safestring import mark_safe
 from scaffold_toolkit.formvalidator.forms.validators import BaseBV, ImageFileValidator
 
-from .utils import convert_datetime_python_to_javascript
+from .utils import convert_datetime_python_to_javascript, get_language
 
 
 register = template.Library()
@@ -82,7 +81,7 @@ def formvalidator(selector, form, requirejs=True, *args, **kwargs):
                            fields=json.dumps(validators, indent=4))
     if requirejs:
         depends = '"jquery","formValidator"'
-        language = kwargs.pop('language', translation.get_language())
+        language = kwargs.pop('language', get_language())
         depends = '{},"formValidator/language/{}"'.format(depends, language)
         vld_code = u'requirejs([{}],function(){{ {} }})'.format(depends, vld_code)
 
@@ -130,7 +129,7 @@ def get_require_config_code(base_url=None, language=None):
         bv = base_url
     if bv.endswith("/"):
         bv = bv[:-1]
-    language = language if language else translation.get_language()
+    language = language if language else get_language()
 
     return config.format(bv=bv, lang=language)
 
