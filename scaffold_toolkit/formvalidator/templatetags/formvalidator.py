@@ -53,10 +53,11 @@ def formvalidator(selector, form, requirejs=True, *args, **kwargs):
     for field in form:
         validators[field.name] = render_field(field)
     code = (u"$(document).ready(function() {{ \r\n"
-            u"      $('{selector}').formValidator({{  \r\n"
+            u"      $('{selector}').formValidation({{  \r\n"
             u"          framework: 'bootstrap',"
             u"          err:{{container:'{container}'}},  \r\n"
             u"          icon: {icon},  \r\n"
+            u"          locale:'{lang}',"
             u"          fields:{fields} \r\n"
             u"      }}) \r\n"
             u'  }});')
@@ -78,7 +79,7 @@ def formvalidator(selector, form, requirejs=True, *args, **kwargs):
     else:
         icon_code = 'null'
     vld_code = code.format(selector=selector, container=container, icon=icon_code,
-                           fields=json.dumps(validators, indent=4))
+                           fields=json.dumps(validators, indent=4), lang=get_language())
     if requirejs:
         depends = '"jquery","formValidator"'
         language = kwargs.pop('language', get_language())
