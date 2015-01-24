@@ -15,8 +15,8 @@ from ..html import render_link_tag
 from ..forms import (
     render_button, render_field, render_field_and_label, render_form,
     render_form_group, render_formset,
-    render_label, render_form_errors, render_formset_errors
-)
+    render_label, render_form_errors, render_formset_errors,
+    render_model)
 from ..components import render_icon, render_alert
 from ..templates_utils import handle_var, parse_token_contents
 from ..text import force_text
@@ -279,6 +279,17 @@ def zui_form(*args, **kwargs):
         {% zui_form form layout='inline' %}
     """
     return render_form(*args, **kwargs)
+
+
+@register.simple_tag
+def zui_model(*args, **kwargs):
+    """
+
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    return render_model(*args, **kwargs)
 
 
 @register.simple_tag

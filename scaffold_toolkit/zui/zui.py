@@ -30,6 +30,13 @@ ZUI_DEFAULTS = {
         'default': 'scaffold_toolkit.zui.renderers.FieldRenderer',
         'inline': 'scaffold_toolkit.zui.renderers.InlineFieldRenderer',
     },
+    'model_renderers': {
+        'default': 'scaffold_toolkit.zui.renderers.ModelRenderer',
+    },
+    'model_field_renderers': {
+        'default': 'scaffold_toolkit.zui.renderers.ModelFieldRenderer'
+    },
+
 }
 
 # Start with a copy of default settings
@@ -102,4 +109,14 @@ def get_form_renderer(**kwargs):
 
 def get_field_renderer(**kwargs):
     renderers = get_zui_setting('field_renderers')
+    return get_renderer(renderers, **kwargs)
+
+
+def get_model_renderer(**kwargs):
+    renderers = get_zui_setting('model_renderers')
+    return get_renderer(renderers, **kwargs)
+
+
+def get_model_field_renderer(**kwargs):
+    renderers = get_zui_setting('model_field_renderers')
     return get_renderer(renderers, **kwargs)

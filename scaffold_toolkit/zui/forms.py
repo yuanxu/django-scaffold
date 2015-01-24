@@ -8,8 +8,8 @@ from django.forms import (
 
 from .zui import (
     get_zui_setting, get_form_renderer, get_field_renderer,
-    get_formset_renderer
-)
+    get_formset_renderer,
+    get_model_field_renderer, get_model_renderer)
 from .text import text_concat, text_value
 from .exceptions import BootstrapError
 from .html import add_css_class, render_tag
@@ -57,6 +57,22 @@ def render_field(field, **kwargs):
     """
     renderer_cls = get_field_renderer(**kwargs)
     return renderer_cls(field, **kwargs).render()
+
+
+def render_model(object, **kwargs):
+    renderer_cls = get_model_renderer(**kwargs)
+    return renderer_cls(object, **kwargs).render()
+
+
+def render_model_field(object,field, **kwargs):
+    """
+    Render a model to Zui layout
+    :param field:
+    :param kwargs:
+    :return:
+    """
+    renderer_cls = get_model_field_renderer(**kwargs)
+    return renderer_cls(object,field, **kwargs).render()
 
 
 def render_label(content, label_for=None, label_class=None, label_title=''):
@@ -158,8 +174,8 @@ def is_widget_required_attribute(widget):
         return False
     if isinstance(
             widget, (
-                AdminFileWidget, HiddenInput, FileInput,
-                CheckboxSelectMultiple)):
+                    AdminFileWidget, HiddenInput, FileInput,
+                    CheckboxSelectMultiple)):
         return False
     return True
 
