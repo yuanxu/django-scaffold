@@ -12,6 +12,6 @@ def convert_datetime_python_to_javascript(input_format):
 
 
 def get_language():
-    parts = translation.get_language().splite('-')
+    parts = translation.get_language().split('-')
     parts[1] = parts[1].upper()
     return '_'.join(parts)
