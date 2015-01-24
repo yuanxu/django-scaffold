@@ -7,7 +7,7 @@ from django.forms import (
 )
 
 from .zui import (
-    get_bootstrap_setting, get_form_renderer, get_field_renderer,
+    get_zui_setting, get_form_renderer, get_field_renderer,
     get_formset_renderer
 )
 from .text import text_concat, text_value
@@ -122,9 +122,9 @@ def render_field_and_label(
     """
     if layout == 'horizontal':
         if not label_class:
-            label_class = get_bootstrap_setting('horizontal_label_class')
+            label_class = get_zui_setting('horizontal_label_class')
         if not field_class:
-            field_class = get_bootstrap_setting('horizontal_field_class')
+            field_class = get_zui_setting('horizontal_field_class')
         if not label:
             label = '&#160;'
         label_class = add_css_class(label_class, 'control-label')
@@ -152,7 +152,7 @@ def is_widget_required_attribute(widget):
     """
     Is this widget required?
     """
-    if not get_bootstrap_setting('set_required'):
+    if not get_zui_setting('set_required'):
         return False
     if not widget.is_required:
         return False

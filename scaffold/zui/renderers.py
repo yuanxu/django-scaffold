@@ -14,7 +14,7 @@ from django.template import Context
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 
-from .zui import get_bootstrap_setting
+from .zui import get_zui_setting
 from .text import text_value
 from .exceptions import BootstrapError
 from .html import add_css_class
@@ -38,11 +38,11 @@ class BaseRenderer(object):
         self.size = self.parse_size(kwargs.get('size', ''))
         self.horizontal_label_class = kwargs.get(
             'horizontal_label_class',
-            get_bootstrap_setting('horizontal_label_class')
+            get_zui_setting('horizontal_label_class')
         )
         self.horizontal_field_class = kwargs.get(
             'horizontal_field_class',
-            get_bootstrap_setting('horizontal_field_class')
+            get_zui_setting('horizontal_field_class')
         )
 
     def parse_size(self, size):
@@ -204,7 +204,7 @@ class FieldRenderer(BaseRenderer):
         self.field_errors = [conditional_escape(text_value(error))
                              for error in field.errors]
 
-        if get_bootstrap_setting('set_placeholder'):
+        if get_zui_setting('set_placeholder'):
             self.placeholder = field.label
         else:
             self.placeholder = ''
@@ -222,19 +222,19 @@ class FieldRenderer(BaseRenderer):
         else:
             self.error_css_class = getattr(
                 field.form, 'error_css_class',
-                get_bootstrap_setting('error_css_class'))
+                get_zui_setting('error_css_class'))
         if required_css_class:
             self.required_css_class = required_css_class
         else:
             self.required_css_class = getattr(
                 field.form, 'required_css_class',
-                get_bootstrap_setting('required_css_class'))
+                get_zui_setting('required_css_class'))
         if bound_css_class:
             self.success_css_class = bound_css_class
         else:
             self.success_css_class = getattr(
                 field.form, 'bound_css_class',
-                get_bootstrap_setting('success_css_class'))
+                get_zui_setting('success_css_class'))
 
         # Handle form.empty_permitted
         if self.field.form.empty_permitted:
