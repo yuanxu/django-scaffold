@@ -21,14 +21,14 @@ ZUI_DEFAULTS = {
     'error_css_class': 'has-error',
     'success_css_class': 'has-success',
     'formset_renderers': {
-        'default': 'zui.renderers.FormsetRenderer',
+        'default': 'scaffold_toolkit.zui.renderers.FormsetRenderer',
     },
     'form_renderers': {
-        'default': 'zui.renderers.FormRenderer',
+        'default': 'scaffold_toolkit.zui.renderers.FormRenderer',
     },
     'field_renderers': {
-        'default': 'zui.renderers.FieldRenderer',
-        'inline': 'zui.renderers.InlineFieldRenderer',
+        'default': 'scaffold_toolkit.zui.renderers.FieldRenderer',
+        'inline': 'scaffold_toolkit.zui.renderers.InlineFieldRenderer',
     },
 }
 

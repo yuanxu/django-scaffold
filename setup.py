@@ -11,7 +11,7 @@ setup(
     version='0.0.3',
     author='Xu Yuan',
     author_email='ankh2008@gmail.com',
-    packages=['scaffold'] + ['scaffold.%s' % item for item in find_packages("scaffold")],
+    packages=['scaffold_toolkit'] + ['scaffold_toolkit.%s' % item for item in find_packages("scaffold_toolkit")],
     url="https://github.com/yuanxu/django-scaffold",
     license='LICENSE.txt',
     description='Django开发中一组常用工具。包括表单生成，验证，富文本编辑器，useragent检测等等',
@@ -19,7 +19,7 @@ setup(
     long_description=open(os.path.join(base_dir, 'README.md'), encoding='utf-8').read(),
     install_requires=['requests', 'django-braces'],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',

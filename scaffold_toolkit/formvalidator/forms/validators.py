@@ -11,7 +11,7 @@ class BaseBV(object):
     def __call__(self, value):
         # value = force_text(value)
         # TODO: support server side validation
-        warn("Bootstrap_Validator.%s not support server side validation now." % self.code)
+        warn("django-scaffold-toolkit.formValidator.%s not support server side validation now." % self.code)
         return
 
     def get_validator_code(self):

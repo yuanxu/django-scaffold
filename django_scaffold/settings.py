@@ -36,9 +36,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'scaffold',
-    'scaffold.formvalidator',
-    'scaffold.zui'
+    'scaffold_toolkit',
+    'scaffold_toolkit.formvalidator',
+    'scaffold_toolkit.zui'
 )
 
 MIDDLEWARE_CLASSES = (

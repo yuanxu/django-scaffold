@@ -1,6 +1,6 @@
 
 include README.md  setup.py
-recursive-include scaffold\static *
-recursive-include scaffold\formvalidator\static *
-recursive-include scaffold\zui\static *
+recursive-include scaffold_toolkit\static *
+recursive-include scaffold_toolkit\formvalidator\static *
+recursive-include scaffold_toolkit\zui\static *
 

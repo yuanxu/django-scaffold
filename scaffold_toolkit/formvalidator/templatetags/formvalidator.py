@@ -6,8 +6,9 @@ from django.conf import settings
 from django.forms import forms
 from django.forms import fields
 from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator
+from django.utils import translation
 from django.utils.safestring import mark_safe
-from scaffold.formvalidator.forms.validators import BaseBV, ImageFileValidator
+from scaffold_toolkit.formvalidator.forms.validators import BaseBV, ImageFileValidator
 
 from .utils import convert_datetime_python_to_javascript
 
@@ -23,16 +24,16 @@ def _get_static_url(path):
 
 @register.simple_tag
 def formvalidator_javascript_url():
-    return _get_static_url('validator/js/bootstrapValidator.min.js')
+    return _get_static_url('formvalidator/js/formValidation.min.js')
 
 
 @register.simple_tag
 def formvalidator_css_url():
-    return _get_static_url('validator/css/bootstrapValidator.min.css')
+    return _get_static_url('formvalidator/css/formValidation.min.css')
 
 
 @register.simple_tag
-def formvalidator(selector, form, requirejs=False, *args, **kwargs):
+def formvalidator(selector, form, requirejs=True, *args, **kwargs):
     """
 
     :param selector:
@@ -41,38 +42,33 @@ def formvalidator(selector, form, requirejs=False, *args, **kwargs):
      :type form: django.forms.Form
     :param requirejs:
     :param args:
-    :param kwargs:(language,config_requirejs)
+    :param kwargs:(language)
     :return:
     """
     if not selector.startswith(u'.') and not selector.startswith('#'):
         selector = '#' + selector
-    container = kwargs.pop('container', '')
+    container = kwargs.pop('err.container', '') or kwargs.pop('container', '')
     icon = kwargs.pop('icon', None)
 
     validators = {}
     for field in form:
         validators[field.name] = render_field(field)
     code = (u"$(document).ready(function() {{ \r\n"
-            u"      $('{selector}').bootstrapValidator({{  \r\n"
-            u"          container:'{container}',  \r\n"
-            u"          feedbackIcons: {icon},  \r\n"
+            u"      $('{selector}').formValidator({{  \r\n"
+            u"          framework: 'bootstrap',"
+            u"          err:{{container:'{container}'}},  \r\n"
+            u"          icon: {icon},  \r\n"
             u"          fields:{fields} \r\n"
             u"      }}) \r\n"
             u'  }});')
     icon = icon.lower() if icon else None
-    if icon == 'bootstrap' or icon == "buildin":
-        icon_code = (u"{ \r\n"
-                     u"valid: 'glyphicon glyphicon-ok', \r\n"
-                     u"invalid: 'glyphicon glyphicon-remove', \r\n"
-                     u"validating: 'glyphicon glyphicon-refresh' \r\n"
-                     u"} \r\n")
-    elif icon == 'fa' or icon == 'fontawesome':
+    if icon == 'fa' or icon == 'fontawesome':
         icon_code = (u" { \r\n"
                      u"valid: 'fa fa-check', \r\n"
                      u"invalid: 'fa fa-times', \r\n"
                      u"validating: 'fa fa-refresh' \r\n"
                      u"} \r\n")
-    elif icon == 'bootstrap2':
+    elif icon == 'bootstrap2' or icon == 'zui' or icon == 'buildin':
         icon_code = (u" { \r\n"
                      u"valid: 'icon-ok', \r\n"
                      u"invalid: 'icon-remove', \r\n"
@@ -85,12 +81,12 @@ def formvalidator(selector, form, requirejs=False, *args, **kwargs):
     vld_code = code.format(selector=selector, container=container, icon=icon_code,
                            fields=json.dumps(validators, indent=4))
     if requirejs:
-        depends = '"jquery","bootstrapValidator"'
-        if 'language' in kwargs:
-            depends = '{},"bootstrapValidator/language/{}"'.format(depends, kwargs['language'])
+        depends = '"jquery","formValidator"'
+        language = kwargs.pop('language', translation.get_language())
+        depends = '{},"formValidator/language/{}"'.format(depends, language)
         vld_code = u'requirejs([{}],function(){{ {} }})'.format(depends, vld_code)
 
-    return mark_safe(vld_code)
+    return mark_safe(get_require_config_code() + vld_code)
 
 
 @register.simple_tag
@@ -103,27 +99,40 @@ def formvalidator_fields(form):
 
 @register.simple_tag
 def formvalidator_requirejs_config(base_url=None, language=None):
-    config = ("requirejs.config({{"
-              "paths:{{"
-              "'bootstrapValidator':'{bv}/bootstrapValidator.min',"
-              "'bootstrapValidator/language/{lang}':'{bv}/language/{lang}',"
-              "}},"
-              "shim:{{"
-              "'bootstrapValidator':['jquery'],"
-              "'bootstrapValidator/language/{lang}':['bootstrapValidator']"
-              "}}"
-              "}});")
+    return mark_safe(get_require_config_code(base_url, language))
+
+
+def get_require_config_code(base_url=None, language=None):
+    config = ("""
+
+    if (!require.defined("formValidator")){{
+        require.config({{
+              paths:{{
+              'formValidator':'{bv}/formValidator',
+              '_formValidation':'{bv}/js/formValidation.min',
+              '_formValidation/framework/bootstrap':'{bv}/js/framework/bootstrap.min',
+              'formValidator/language/{lang}':'{bv}/js/language/{lang}',
+              }},
+              shim:{{
+              '_formValidation':['jquery'],
+               '_formValidation/framework/bootstrap':['_formValidation'],
+              'formValidator':['_formValidation','_formValidation/framework/bootstrap'],
+              'formValidator/language/{lang}':['formValidator']
+              }}
+        }});
+    }}
+    """)
     if base_url is None:
-        bv = getattr(settings, 'BOOTSTRAP_VALIDATOR_PREFIX', '')
+        bv = getattr(settings, 'FORM_VALIDATOR_PREFIX', '')
         if not bv:
-            bv = _get_static_url('validator/js')
+            bv = _get_static_url('formvalidator')
     else:
         bv = base_url
     if bv.endswith("/"):
         bv = bv[:-1]
-    language = language if language else ''
+    language = language if language else translation.get_language()
 
-    return mark_safe(config.format(bv=bv, lang=language))
+    return config.format(bv=bv, lang=language)
 
 
 def render_field(field):

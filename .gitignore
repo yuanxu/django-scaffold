@@ -3,4 +3,4 @@ env/
 .pyc
 __pycache__/
 dist/
-Django_Scaffold.egg-info/
+*.egg-info/
