@@ -5,8 +5,7 @@ import datetime
 from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.core.cache import cache
 from django.utils.deconstruct import deconstructible
-
-from extension.utils.misc import get_short_uuid
+import shortuuid
 
 
 @deconstructible
@@ -20,7 +19,7 @@ class UploadTo(object):
 
         today = datetime.datetime.today()
 
-        name = get_short_uuid()
+        name = shortuuid.uuid()
 
         return "%s%s%s%s" % (self.path, today.strftime(self.fmt), name, ext.lower())
 
