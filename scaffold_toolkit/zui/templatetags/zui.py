@@ -535,8 +535,8 @@ def zui_messages(context, *args, **kwargs):
     return get_template('zui/messages.html').render(context)
 
 
-@register.inclusion_tag('zui/pagination.html')
-def zui_pagination(page, **kwargs):
+@register.inclusion_tag('zui/pagination.html', takes_context=True)
+def zui_pagination(context, page, **kwargs):
     """
     Render pagination for a page
 
@@ -563,7 +563,7 @@ def zui_pagination(page, **kwargs):
     return get_pagination_context(**pagination_kwargs)
 
 
-def get_pagination_context(page, pages_to_show=11,
+def get_pagination_context(context, page, pages_to_show=11,
                            url=None, style=None, extra=None):
     """
     Generate Bootstrap pagination context from a page object
@@ -607,6 +607,7 @@ def get_pagination_context(page, pages_to_show=11,
     for i in range(first_page, last_page + 1):
         pages_shown.append(i)
         # Append proper character to url
+    url = url if url else context['request'].get_full_path()
     if url:
         # Remove existing page GET parameters
         url = force_text(url)
