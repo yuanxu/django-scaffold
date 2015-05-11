@@ -109,6 +109,46 @@ INSTALLED_APPS=(
 
 # Middleware
 
+### scaffold_toolkit.middleware.devicetemplate.TemplateForDeviceMiddleware
+如果采用移动设备访问，则自动修改模板修改路径改为: [mobile/template_name, template_name]。亦即: 可以为移动设备设置专属的模板，而代码中无需特殊说明
+
+### scaffold_toolkit.middleware.useragentdetecet.UserAgentDetectMiddleware
+为request增加ua属性。ua.is_mobile指示是否移动设备,ua.os指示操作系统
+
+### scaffold_toolkit.middleware.exceptionlogging.ExceptionLoggingMiddleware
+错误记录入日志文件
+    
 # mailgun
 
 # widgets
+
+## scaffold_tool.forms.datetimepicker.DateTimePicker,scaffold_tool.forms.datetimepicker.TimePicker
+日期时间,时间选择控件
+
+## scaffold_toolkit.kindeditor.KindEditor
+富文本编辑器
+
+# 视图
+
+scaffold_toolkit.views.py
+
+## AjaxFormView，AjaxForm
+Ajax处理相关的视图
+
+## kindeditor_upload_file
+文件上传视图
+
+# 其他工具
+
+## scaffold_toolkit.modelemailbackend.ModelEmailBackend
+以Email作为用户名验证
+
+## 自动加载admin模块
+
+```#!python
+from scaffold_toolkit.bootstrap import bootstrap,discover_admin_urls
+bootstrap()
+
+urls+=discover_admin_urls()
+```
+

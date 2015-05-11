@@ -13,7 +13,7 @@ def device_from_request(request):
     try:
         # If a device was set via cookie, match available devices.
         for (device, _) in settings.DEVICE_USER_AGENTS:
-            if device == request.COOKIES["bizupnow-device"]:
+            if device == request.COOKIES["scoffold-device"]:
                 return device
     except KeyError:
         # If a device wasn't set via cookie, match user agent.
