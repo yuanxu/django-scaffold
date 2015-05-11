@@ -80,6 +80,33 @@ formvalidator已经原生支持Django的校验，比如不为空(notEmpty)，字
 
 # zui表单工具
 
+此模块几乎所有代码都来自于 django-bootstrap3。只是将基础框架替换为zui。表签名亦替换为zui。
+
+文档请参阅:http://django-bootstrap3.readthedocs.org/en/latest/
+
+## 用法
+
+* 激活scaffold_toolkit.zui
+
+```#!python
+INSTALLED_APPS=(
+    ...
+    scaffold_toolkit.zui,
+    ...
+)
+```
+
+## 渲染
+
+```#!html
+{% load zui %}
+<form ...>
+    ...
+    {% zui_form form %}
+    ...
+</form>
+```
+
 # Middleware
 
 # mailgun

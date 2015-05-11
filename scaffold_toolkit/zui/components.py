@@ -8,7 +8,7 @@ from .text import text_value
 
 def render_icon(icon, title=''):
     """
-    Render a Bootstrap glyphicon icon
+    Render a zui  icon
     """
     attrs = {
         'class': 'icon-{icon}'.format(icon=icon),
@@ -20,7 +20,7 @@ def render_icon(icon, title=''):
 
 def render_alert(content, alert_type=None, dismissable=True):
     """
-    Render a Bootstrap alert
+    Render a zui alert
     """
     button = ''
     if not alert_type:

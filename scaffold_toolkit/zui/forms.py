@@ -3,16 +3,18 @@ from __future__ import unicode_literals
 
 from django.contrib.admin.widgets import AdminFileWidget
 from django.forms import (
-    HiddenInput, FileInput, CheckboxSelectMultiple, Textarea, TextInput
+    HiddenInput, FileInput, CheckboxSelectMultiple, Textarea, TextInput,
+    PasswordInput
 )
+from django.forms.widgets import CheckboxInput
 
 from .zui import (
     get_zui_setting, get_form_renderer, get_field_renderer,
-    get_formset_renderer,
-    get_model_field_renderer, get_model_renderer)
+    get_formset_renderer
+)
 from .text import text_concat, text_value
 from .exceptions import BootstrapError
-from .html import add_css_class, render_tag
+from .utils import add_css_class, render_tag, split_css_classes
 from .components import render_icon
 
 
@@ -27,17 +29,17 @@ def render_formset(formset, **kwargs):
     return renderer_cls(formset, **kwargs).render()
 
 
-def render_formset_errors(form, **kwargs):
+def render_formset_errors(formset, **kwargs):
     """
     Render formset errors to a Bootstrap layout
     """
     renderer_cls = get_formset_renderer(**kwargs)
-    return renderer_cls(form, **kwargs).render_errors()
+    return renderer_cls(formset, **kwargs).render_errors()
 
 
 def render_form(form, **kwargs):
     """
-    Render a formset to a Bootstrap layout
+    Render a form to a Bootstrap layout
     """
     renderer_cls = get_form_renderer(**kwargs)
     return renderer_cls(form, **kwargs).render()
@@ -53,26 +55,10 @@ def render_form_errors(form, type='all', **kwargs):
 
 def render_field(field, **kwargs):
     """
-    Render a formset to a Bootstrap layout
+    Render a field to a Bootstrap layout
     """
     renderer_cls = get_field_renderer(**kwargs)
     return renderer_cls(field, **kwargs).render()
-
-
-def render_model(object, **kwargs):
-    renderer_cls = get_model_renderer(**kwargs)
-    return renderer_cls(object, **kwargs).render()
-
-
-def render_model_field(object,field, **kwargs):
-    """
-    Render a model to Zui layout
-    :param field:
-    :param kwargs:
-    :return:
-    """
-    renderer_cls = get_model_field_renderer(**kwargs)
-    return renderer_cls(object,field, **kwargs).render()
 
 
 def render_label(content, label_for=None, label_class=None, label_title=''):
@@ -91,7 +77,7 @@ def render_label(content, label_for=None, label_class=None, label_title=''):
 
 def render_button(
         content, button_type=None, icon=None, button_class='', size='',
-        href=''):
+        href='', name=None, value=None):
     """
     Render a button with content
     """
@@ -112,7 +98,8 @@ def render_button(
             'empty ("{}" given).'.format(size))
     if button_type:
         if button_type == 'submit':
-            classes = add_css_class(classes, 'btn-primary')
+            if not any([c.startswith('btn-') for c in split_css_classes(classes)]):
+                classes = add_css_class(classes, 'btn-primary')
         elif button_type not in ('reset', 'button', 'link'):
             raise BootstrapError(
                 'Parameter "button_type" should be "submit", "reset", ' +
@@ -125,6 +112,10 @@ def render_button(
         tag = 'a'
     else:
         tag = 'button'
+    if name:
+        attrs['name'] = name
+    if value:
+        attrs['value'] = value
     return render_tag(
         tag, attrs=attrs, content=text_concat(
             icon_content, content, separator=' '))
@@ -174,8 +165,8 @@ def is_widget_required_attribute(widget):
         return False
     if isinstance(
             widget, (
-                    AdminFileWidget, HiddenInput, FileInput,
-                    CheckboxSelectMultiple)):
+                AdminFileWidget, HiddenInput, FileInput,
+                CheckboxInput, CheckboxSelectMultiple)):
         return False
     return True
 
@@ -186,4 +177,6 @@ def is_widget_with_placeholder(widget):
     Only text, search, url, tel, e-mail, password, number have placeholders
     These are all derived form TextInput, except for Textarea
     """
-    return isinstance(widget, (TextInput, Textarea))
+    # PasswordInput inherits from Input in Django 1.4.
+    # It was changed to inherit from TextInput in 1.5.
+    return isinstance(widget, (TextInput, Textarea, PasswordInput))

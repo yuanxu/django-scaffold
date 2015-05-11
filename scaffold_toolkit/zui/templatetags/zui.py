@@ -11,14 +11,14 @@ from django.template.loader import get_template
 from ..zui import (
     css_url, javascript_url, jquery_url, theme_url, get_zui_setting
 )
-from ..html import render_link_tag
+from ..utils import render_link_tag
 from ..forms import (
     render_button, render_field, render_field_and_label, render_form,
     render_form_group, render_formset,
-    render_label, render_form_errors, render_formset_errors,
-    render_model)
+    render_label, render_form_errors, render_formset_errors
+)
 from ..components import render_icon, render_alert
-from ..templates_utils import handle_var, parse_token_contents
+from ..utils import handle_var, parse_token_contents
 from ..text import force_text
 
 
@@ -28,7 +28,7 @@ register = template.Library()
 @register.filter
 def zui_setting(value):
     """
-    A simple way to read bootstrap settings in a template.
+    A simple way to read zui settings in a template.
     Please consider this filter private for now, do not use it in your own
     templates.
     """
@@ -62,7 +62,7 @@ def zui_jquery_url():
 @register.simple_tag
 def zui_javascript_url():
     """
-    Return the full url to the Bootstrap JavaScript library
+    Return the full url to the zui JavaScript library
 
     Default value: ``None``
 
@@ -86,7 +86,7 @@ def zui_javascript_url():
 @register.simple_tag
 def zui_css_url():
     """
-    Return the full url to the Bootstrap CSS library
+    Return the full url to the zui CSS library
 
     Default value: ``None``
 
@@ -110,7 +110,7 @@ def zui_css_url():
 @register.simple_tag
 def zui_theme_url():
     """
-    Return the full url to a Bootstrap theme CSS library
+    Return the full url to a zui theme CSS library
 
     Default value: ``None``
 
@@ -134,7 +134,7 @@ def zui_theme_url():
 @register.simple_tag
 def zui_css():
     """
-    Return HTML for Bootstrap CSS
+    Return HTML for zui CSS
     Adjust url in settings. If no url is returned, we don't want this statement
     to return any HTML.
     This is intended behavior.
@@ -162,7 +162,7 @@ def zui_css():
 @register.simple_tag
 def zui_javascript(jquery=None):
     """
-    Return HTML for Bootstrap JavaScript.
+    Return HTML for zui JavaScript.
 
     Adjust url in settings. If no url is returned, we don't want this
     statement to return any HTML.
@@ -178,7 +178,7 @@ def zui_javascript(jquery=None):
 
     **Parameters**:
 
-        :jquery: Truthy to include jQuery as well as Bootstrap
+        :jquery: Truthy to include jQuery as well as zui
 
     **usage**::
 
@@ -234,11 +234,11 @@ def zui_formset(*args, **kwargs):
 @register.simple_tag
 def zui_formset_errors(*args, **kwargs):
     """
-    Render form errors
+    Render formset errors
 
     **Tag name**::
 
-        zui_form_errors
+        zui_formset_errors
 
     **Parameters**:
 
@@ -247,11 +247,11 @@ def zui_formset_errors(*args, **kwargs):
 
     **usage**::
 
-        {% zui_form_errors form %}
+        {% zui_formset_errors formset %}
 
     **example**::
 
-        {% zui_form_errors form layout='inline' %}
+        {% zui_formset_errors formset layout='inline' %}
     """
     return render_formset_errors(*args, **kwargs)
 
@@ -279,17 +279,6 @@ def zui_form(*args, **kwargs):
         {% zui_form form layout='inline' %}
     """
     return render_form(*args, **kwargs)
-
-
-@register.simple_tag
-def zui_model(*args, **kwargs):
-    """
-
-    :param args:
-    :param kwargs:
-    :return:
-    """
-    return render_model(*args, **kwargs)
 
 
 @register.simple_tag
@@ -337,7 +326,7 @@ def zui_field(*args, **kwargs):
 
     **example**::
 
-        {% zui_form form_field %}
+        {% zui_field form_field %}
     """
     return render_field(*args, **kwargs)
 
@@ -506,7 +495,7 @@ class ButtonsNode(template.Node):
 @register.simple_tag(takes_context=True)
 def zui_messages(context, *args, **kwargs):
     """
-    Show django.contrib.messages Messages in Bootstrap alert containers.
+    Show django.contrib.messages Messages in zui alert containers.
 
     In order to make the alerts dismissable (with the close button),
     we have to set the jquery parameter too when using the
@@ -535,8 +524,8 @@ def zui_messages(context, *args, **kwargs):
     return get_template('zui/messages.html').render(context)
 
 
-@register.inclusion_tag('zui/pagination.html', takes_context=True)
-def zui_pagination(context, page, **kwargs):
+@register.inclusion_tag('zui/pagination.html')
+def zui_pagination(page, **kwargs):
     """
     Render pagination for a page
 
@@ -547,6 +536,7 @@ def zui_pagination(context, page, **kwargs):
     **Parameters**:
 
         :page:
+        :parameter_name: Name of paging URL parameter (default: "page")
         :kwargs:
 
     **usage**::
@@ -563,15 +553,17 @@ def zui_pagination(context, page, **kwargs):
     return get_pagination_context(**pagination_kwargs)
 
 
-def get_pagination_context(context, page, pages_to_show=11,
-                           url=None, style=None, extra=None):
+def get_pagination_context(page, pages_to_show=11,
+                           url=None, size=None, extra=None,
+                           parameter_name='page'):
     """
-    Generate Bootstrap pagination context from a page object
+    Generate zui pagination context from a page object
     """
     pages_to_show = int(pages_to_show)
     if pages_to_show < 1:
         raise ValueError("Pagination pages_to_show should be a positive " +
-                         "integer, you specified {pages}".format(pages=pages_to_show))
+                         "integer, you specified {pages}".format(
+                             pages=pages_to_show))
     num_pages = page.paginator.num_pages
     current_page = page.number
     half_page_num = int(floor(pages_to_show / 2)) - 1
@@ -607,12 +599,11 @@ def get_pagination_context(context, page, pages_to_show=11,
     for i in range(first_page, last_page + 1):
         pages_shown.append(i)
         # Append proper character to url
-    url = url if url else context['request'].get_full_path()
     if url:
         # Remove existing page GET parameters
         url = force_text(url)
-        url = re.sub(r'\?page\=[^\&]+', '?', url)
-        url = re.sub(r'\&page\=[^\&]+', '', url)
+        url = re.sub(r'\?{0}\=[^\&]+'.format(parameter_name), '?', url)
+        url = re.sub(r'\&{0}\=[^\&]+'.format(parameter_name), '', url)
         # Append proper separator
         if '?' in url:
             url += '&'
@@ -625,14 +616,12 @@ def get_pagination_context(context, page, pages_to_show=11,
         url += force_text(extra) + '&'
     if url:
         url = url.replace('?&', '?')
-    # Set CSS classes, see http://getbootstrap.com/components/#pagination
-    pagination_css_classes = ['pager']
-    if style == 'pills':
-        pagination_css_classes.append('pager-pills')
-    elif style == 'loose':
-        pagination_css_classes.append('pager-loose')
-    elif style == 'justify':
-        pagination_css_classes.append('pager-justify')
+    # Set CSS classes, see http://getzui.com/components/#pagination
+    pagination_css_classes = ['pagination']
+    if size == 'small':
+        pagination_css_classes.append('pagination-sm')
+    elif size == 'large':
+        pagination_css_classes.append('pagination-lg')
         # Build context object
     return {
         'zui_pagination_url': url,
@@ -644,4 +633,5 @@ def get_pagination_context(context, page, pages_to_show=11,
         'pages_back': pages_back,
         'pages_forward': pages_forward,
         'pagination_css_classes': ' '.join(pagination_css_classes),
+        'parameter_name': parameter_name,
     }

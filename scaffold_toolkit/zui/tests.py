@@ -6,11 +6,12 @@ import re
 from django.test import TestCase
 
 from django import forms
+from django.forms.formsets import formset_factory
 from django.template import Template, Context
 
 from .text import text_value, text_concat
 from .exceptions import BootstrapError
-from .html import add_css_class
+from .utils import add_css_class
 
 
 RADIO_CHOICES = (
@@ -44,6 +45,7 @@ class TestForm(forms.Form):
         required=True,
         widget=forms.TextInput(attrs={'placeholder': 'placeholdertest'}),
     )
+    password = forms.CharField(widget=forms.PasswordInput)
     message = forms.CharField(required=False, help_text='<i>my_help_text</i>')
     sender = forms.EmailField(label='Sender © unicode')
     secret = forms.CharField(initial=42, widget=forms.HiddenInput)
@@ -72,6 +74,9 @@ class TestForm(forms.Form):
         choices=MEDIA_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         help_text='Check as many as you like.',
+    )
+    addon = forms.CharField(
+        widget=forms.TextInput(attrs={'addon_before': 'before', 'addon_after': 'after'}),
     )
 
     required_css_class = 'bootstrap3-req'
@@ -211,6 +216,12 @@ class FormTest(TestCase):
         for field in form:
             self.assertIn('name="%s"' % field.name, res)
 
+    def test_field_addons(self):
+        form = TestForm()
+        res = render_form(form)
+        self.assertIn('<div class="input-group"><span class="input-group-addon">before</span><input', res)
+        self.assertIn('/><span class="input-group-addon">after</span></div>', res)
+
     def test_exclude(self):
         form = TestForm()
         res = render_template(
@@ -221,8 +232,8 @@ class FormTest(TestCase):
         form = TestForm()
         res = render_template(
             '{% bootstrap_form form layout="horizontal" %}', form=form)
-        self.assertIn('col-md-2', res)
-        self.assertIn('col-md-4', res)
+        self.assertIn('col-md-3', res)
+        self.assertIn('col-md-9', res)
         res = render_template(
             '{% bootstrap_form form layout="horizontal" ' +
             'horizontal_label_class="hlabel" ' +
@@ -236,8 +247,8 @@ class FormTest(TestCase):
         form = TestForm()
         res = render_template(
             '{% buttons layout="horizontal" %}{% endbuttons %}', form=form)
-        self.assertIn('col-md-2', res)
-        self.assertIn('col-md-4', res)
+        self.assertIn('col-md-3', res)
+        self.assertIn('col-md-9', res)
 
 
 class FieldTest(TestCase):
@@ -256,6 +267,11 @@ class FieldTest(TestCase):
         res = render_form_field('subject')
         self.assertIn('type="text"', res)
         self.assertIn('placeholder="placeholdertest"', res)
+
+    def test_password(self):
+        res = render_form_field('password')
+        self.assertIn('type="password"', res)
+        self.assertIn('placeholder="Password"', res)
 
     def test_required_field(self):
         required_field = render_form_field('subject')
@@ -436,3 +452,22 @@ class ButtonTest(TestCase):
             res.strip(),
             '<a class="btn btn-lg" href="#">button</a><a href="#" ' +
             'class="btn btn-lg">button</a>')
+
+
+class ShowLabelTest(TestCase):
+    def test_show_label(self):
+        form = TestForm()
+        res = render_template(
+            '{% bootstrap_form form show_label=False %}',
+            form=form
+        )
+        self.assertIn('sr-only', res)
+
+    def test_for_formset(self):
+        TestFormSet = formset_factory(TestForm, extra=1)
+        test_formset = TestFormSet()
+        res = render_template(
+            '{% bootstrap_formset formset show_label=False %}',
+            formset=test_formset
+        )
+        self.assertIn('sr-only', res)

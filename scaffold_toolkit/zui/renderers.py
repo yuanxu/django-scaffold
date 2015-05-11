@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib.auth.forms import ReadOnlyPasswordHashWidget
-from django.db.models import Model, AutoField
 
 from django.forms import (
     TextInput, DateInput, FileInput, CheckboxInput,
@@ -11,18 +10,18 @@ from django.forms.extras import SelectDateWidget
 from django.forms.forms import BaseForm, BoundField
 from django.forms.formsets import BaseFormSet
 from django.utils.html import conditional_escape, strip_tags
-from django.template import Context, Template
+from django.template import Context
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 
 from .zui import get_zui_setting
 from .text import text_value
 from .exceptions import BootstrapError
-from .html import add_css_class
+from .utils import add_css_class
 from .forms import (
     render_form, render_field, render_label, render_form_group,
-    is_widget_with_placeholder, is_widget_required_attribute, FORM_GROUP_CLASS,
-    render_model_field)
+    is_widget_with_placeholder, is_widget_required_attribute, FORM_GROUP_CLASS
+)
 
 
 class BaseRenderer(object):
@@ -36,6 +35,7 @@ class BaseRenderer(object):
         self.show_label = kwargs.get('show_label', True)
         self.exclude = kwargs.get('exclude', '')
         self.set_required = kwargs.get('set_required', True)
+        self.set_disabled = kwargs.get('set_disabled', False)
         self.size = self.parse_size(kwargs.get('size', ''))
         self.horizontal_label_class = kwargs.get(
             'horizontal_label_class',
@@ -91,9 +91,11 @@ class FormsetRenderer(BaseRenderer):
                 form_group_class=self.form_group_class,
                 field_class=self.field_class,
                 label_class=self.label_class,
+                show_label=self.show_label,
                 show_help=self.show_help,
                 exclude=self.exclude,
                 set_required=self.set_required,
+                set_disabled=self.set_disabled,
                 size=self.size,
                 horizontal_label_class=self.horizontal_label_class,
                 horizontal_field_class=self.horizontal_field_class,
@@ -108,17 +110,17 @@ class FormsetRenderer(BaseRenderer):
         if formset_errors:
             return get_template(
                 'zui/form_errors.html').render(
-                Context({
-                    'errors': formset_errors,
-                    'form': self.formset,
-                    'layout': self.layout,
-                })
-            )
+                    Context({
+                        'errors': formset_errors,
+                        'form': self.formset,
+                        'layout': self.layout,
+                    })
+                )
         return ''
 
     def render(self):
         return self.render_errors() + self.render_management_form() + \
-               self.render_forms()
+            self.render_forms()
 
 
 class FormRenderer(BaseRenderer):
@@ -145,9 +147,11 @@ class FormRenderer(BaseRenderer):
                 form_group_class=self.form_group_class,
                 field_class=self.field_class,
                 label_class=self.label_class,
+                show_label=self.show_label,
                 show_help=self.show_help,
                 exclude=self.exclude,
                 set_required=self.set_required,
+                set_disabled=self.set_disabled,
                 size=self.size,
                 horizontal_label_class=self.horizontal_label_class,
                 horizontal_field_class=self.horizontal_field_class,
@@ -165,7 +169,7 @@ class FormRenderer(BaseRenderer):
         form_errors = None
         if type == 'all':
             form_errors = self.get_fields_errors() + \
-                          self.form.non_field_errors()
+                self.form.non_field_errors()
         elif type == 'fields':
             form_errors = self.get_fields_errors()
         elif type == 'non_fields':
@@ -174,12 +178,12 @@ class FormRenderer(BaseRenderer):
         if form_errors:
             return get_template(
                 'zui/form_errors.html').render(
-                Context({
-                    'errors': form_errors,
-                    'form': self.form,
-                    'layout': self.layout,
-                })
-            )
+                    Context({
+                        'errors': form_errors,
+                        'form': self.form,
+                        'layout': self.layout,
+                    })
+                )
         return ''
 
     def render(self):
@@ -210,8 +214,8 @@ class FieldRenderer(BaseRenderer):
         else:
             self.placeholder = ''
 
-        self.addon_before = kwargs.get('addon_before', '')
-        self.addon_after = kwargs.get('addon_after', '')
+        self.addon_before = kwargs.get('addon_before', self.initial_attrs.pop('addon_before', ''))
+        self.addon_after = kwargs.get('addon_after', self.initial_attrs.pop('addon_after', ''))
 
         # These are set in Django or in the global BOOTSTRAP3 settings, and
         # they can be overwritten in the template
@@ -241,6 +245,8 @@ class FieldRenderer(BaseRenderer):
         if self.field.form.empty_permitted:
             self.set_required = False
             self.required_css_class = ''
+
+        self.set_disabled = kwargs.get('set_disabled', False)
 
     def restore_widget_attrs(self):
         self.widget.attrs = self.initial_attrs
@@ -273,11 +279,16 @@ class FieldRenderer(BaseRenderer):
         if self.set_required and is_widget_required_attribute(self.widget):
             self.widget.attrs['required'] = 'required'
 
+    def add_disabled_attrs(self):
+        if self.set_disabled:
+            self.widget.attrs['disabled'] = 'disabled'
+
     def add_widget_attrs(self):
         self.add_class_attrs()
         self.add_placeholder_attrs()
         self.add_help_attrs()
         self.add_required_attrs()
+        self.add_disabled_attrs()
 
     def list_to_class(self, html, klass):
         classes = add_css_class(klass, self.get_size_class())
@@ -302,7 +313,7 @@ class FieldRenderer(BaseRenderer):
         div2 = '</div>'
         html = html.replace('<select', div1 + '<select')
         html = html.replace('</select>', '</select>' + div2)
-        return '<div class="row bootstrap3-multi-input">' + html + '</div>'
+        return '<div class="row zui-multi-input">' + html + '</div>'
 
     def fix_clearable_file_input(self, html):
         """
@@ -320,8 +331,8 @@ class FieldRenderer(BaseRenderer):
 
         """
         # TODO This needs improvement
-        return '<div class="row bootstrap3-multi-input">' + \
-               '<div class="col-xs-12">' + html + '</div></div>'
+        return '<div class="row zui-multi-input">' + \
+            '<div class="col-xs-12">' + html + '</div></div>'
 
     def post_widget_render(self, html):
         if isinstance(self.widget, RadioSelect):
@@ -340,16 +351,15 @@ class FieldRenderer(BaseRenderer):
         if isinstance(self.widget, CheckboxInput):
             checkbox_class = add_css_class('checkbox', self.get_size_class())
             html = \
-                '<div class="{klass}">' + \
-                '{content}</div>'.format(
+                '<div class="{klass}">{content}</div>'.format(
                     klass=checkbox_class, content=html
                 )
         return html
 
     def make_input_group(self, html):
         if (
-                    (self.addon_before or self.addon_after) and
-                    isinstance(self.widget, (TextInput, DateInput, Select))
+                (self.addon_before or self.addon_after) and
+                isinstance(self.widget, (TextInput, DateInput, Select))
         ):
             before = '<span class="input-group-addon">{addon}</span>'.format(
                 addon=self.addon_before) if self.addon_before else ''
@@ -485,129 +495,3 @@ class InlineFieldRenderer(FieldRenderer):
 
     def get_label_class(self):
         return add_css_class(self.label_class, 'sr-only')
-
-
-class ModelRenderer(BaseRenderer):
-    """
-    Default form renderer
-    """
-
-    def __init__(self, object, *args, **kwargs):
-        if not isinstance(object, Model):
-            raise BootstrapError(
-                'Parameter "object" should contain a valid Django Form.')
-        self.object = object
-        super(ModelRenderer, self).__init__(*args, **kwargs)
-        # Handle form.empty_permitted
-        # if self.form.empty_permitted:
-        # self.set_required = False
-
-    def render_fields(self):
-        rendered_fields = []
-
-        for field in self.object._meta.fields:
-            rendered_fields.append(render_model_field(self.object,
-                                                      field,
-                                                      layout=self.layout,
-                                                      form_group_class=self.form_group_class,
-                                                      field_class=self.field_class,
-                                                      label_class=self.label_class,
-                                                      show_help=self.show_help,
-                                                      exclude=self.exclude,
-                                                      set_required=self.set_required,
-                                                      size=self.size,
-                                                      horizontal_label_class=self.horizontal_label_class,
-                                                      horizontal_field_class=self.horizontal_field_class,
-            ))
-        return '\n'.join(rendered_fields)
-
-    def render(self):
-        return self.render_fields()
-
-
-class ModelFieldRenderer(BaseRenderer):
-    def __init__(self, object, field, *args, **kwargs):
-        self.object = object
-        self.field = field
-        super(ModelFieldRenderer, self).__init__(*args, **kwargs)
-        self.field_help = text_value(mark_safe(field.help_text)) \
-            if self.show_help and field.help_text else ''
-
-    def append_to_field(self, html):
-        help_text_and_errors = [self.field_help]
-        if help_text_and_errors:
-            help_html = Template(
-                "{{ help_text_and_errors|join:' ' }}"
-            ).render(Context({
-                'field': self.field,
-                'help_text_and_errors': help_text_and_errors,
-                'layout': self.layout,
-            }))
-            html += '<span class="help-block">{help}</span>'.format(
-                help=help_html)
-        return html
-
-    def get_field_class(self):
-        field_class = self.field_class
-        if not field_class and self.layout == 'horizontal':
-            field_class = self.horizontal_field_class
-        return field_class
-
-    def wrap_field(self, html):
-        field_class = self.get_field_class()
-        if field_class:
-            html = '<div class="{klass}"><p class="form-control-static">{html}</p></div>'.format(
-                klass=field_class, html=html)
-        return html
-
-    def get_label_class(self):
-        label_class = self.label_class
-        if not label_class and self.layout == 'horizontal':
-            label_class = add_css_class(self.horizontal_label_class, 'control-label')
-        if self.layout == 'inline':
-            label_class = 'sr-only'
-        label_class = text_value(label_class)
-        if not self.show_label:
-            label_class = add_css_class(label_class, 'sr-only')
-        return label_class
-
-    def get_label(self):
-        label = self.field.verbose_name
-        if self.layout == 'horizontal' and not label:
-            return '&#160;'
-        return label
-
-    def add_label(self, html):
-        label = self.get_label()
-        if label:
-            html = """<label class="{label_class}">{label}</label>""".format(label_class=self.get_label_class(),
-                                                                             label=label) + html
-        return html
-
-    def get_form_group_class(self):
-        form_group_class = self.form_group_class
-
-        if self.layout == 'horizontal':
-            form_group_class = add_css_class(
-                form_group_class, self.get_size_class(prefix='form-group'))
-        return form_group_class
-
-    def wrap_label_and_field(self, html):
-        return render_form_group(html, self.get_form_group_class())
-
-    def render(self):
-        # See if we're not excluded
-        if self.field.name in self.exclude.replace(' ', '').split(','):
-            return ''
-        # Hidden input requires no special treatment
-        if isinstance(self.field, AutoField):
-            return text_value(getattr(self.object, self.field.name))
-
-        html = text_value(getattr(self.object, self.field.name))
-
-        # Start post render
-        html = self.append_to_field(html)
-        html = self.wrap_field(html)
-        html = self.add_label(html)
-        html = self.wrap_label_and_field(html)
-        return html
