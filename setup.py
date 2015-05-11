@@ -8,13 +8,13 @@ from setuptools import find_packages
 base_dir = os.path.dirname(__file__)
 setup(
     name='django-scaffold-toolkit',
-    version='0.0.9',
-    author='Xu Yuan',
+    version='0.1.0',
+    author='YuanXu',
     author_email='ankh2008@gmail.com',
     packages=['scaffold_toolkit'] + ['scaffold_toolkit.%s' % item for item in find_packages("scaffold_toolkit")],
     url="https://github.com/yuanxu/django-scaffold",
     license='LICENSE.txt',
-    description='Django开发中一组常用工具。包括表单生成，验证，富文本编辑器，useragent检测等等',
+    description=u'Django开发中一组常用工具。包括表单生成，验证，富文本编辑器，useragent检测等等',
     include_package_data=True,
     long_description=open(os.path.join(base_dir, 'README.md'), encoding='utf-8').read(),
     # install_requires=['requests', 'django-braces'],
