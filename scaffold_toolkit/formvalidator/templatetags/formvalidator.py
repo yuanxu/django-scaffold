@@ -27,12 +27,17 @@ def formvalidator_javascript_url():
 
 
 @register.simple_tag
+def formvalidator_language_url(language):
+    return _get_static_url('formvalidator/js/language/{}.js'.format(language))
+
+
+@register.simple_tag
 def formvalidator_css_url():
     return _get_static_url('formvalidator/css/formValidation.min.css')
 
 
 @register.simple_tag
-def formvalidator(selector, form, requirejs=True, *args, **kwargs):
+def formvalidator(selector, form, requirejs=False, *args, **kwargs):
     """
 
     :param selector:
@@ -185,7 +190,7 @@ def render_field(field):
             validators['date'] = {'format': convert_datetime_python_to_javascript(formats[0])}
     elif isinstance(field, fields.TimeField):
         validators['regexp'] = {'regexp': '^((([0-1]?[0-9])|([2][0-3])):)(([0-5][0-9]):)([0-5][0-9])$',
-        }
+                                }
     elif isinstance(field, fields.URLField):
         validators['uri'] = {}
     elif isinstance(field, fields.EmailField):

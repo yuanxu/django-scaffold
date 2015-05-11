@@ -26,7 +26,7 @@ class BaseBV(object):
 class IdValidator(BaseBV):
     """
     Validate identification number
-    http://bootstrapvalidator.com/validators/id/
+    http://formvalidation.io/validators/id/
     """
     code = 'id'
     COUNTRIES = {'BA': 'Bosnia and Herzegovina',
@@ -110,7 +110,7 @@ class IdenticalValidator(BaseBV):
     """
     Check if the value is the same as one of particular field
 
-    http://bootstrapvalidator.com/validators/identical/
+    http://formvalidation.io/validators/identical/
     """
     code = 'identical'
 
@@ -126,7 +126,7 @@ class DifferentValidator(BaseBV):
     """
     Return true if the input value is different with given field's value
 
-    http://bootstrapvalidator.com/validators/diffenert/
+    http://formvalidation.io/validators/diffenert/
     """
     code = 'different'
 
@@ -142,7 +142,7 @@ class RemoteValidator(BaseBV):
     """
     Perform remote checking via Ajax request
 
-    http://bootstrapvalidator.com/validators/remote/
+    http://formvalidation.io/validators/remote/
     """
 
     code = 'remote'
@@ -173,7 +173,7 @@ class ChoicesValidator(BaseBV):
     """
     Check if the number of checked boxes are less or more than a given number
 
-    http://bootstrapvalidator.com/validators/choice/
+    http://formvalidation.io/validators/choice/
     """
     code = 'choices'
 
@@ -190,7 +190,7 @@ class CallBackValidator(BaseBV):
     """
     Return the validity from a callback method
 
-    http://bootstrapvalidator.com/validators/callback/
+    http://formvalidation.io/validators/callback/
     """
     code = 'callback'
 
@@ -211,7 +211,7 @@ class PhoneValidator(BaseBV):
     """
     Validate a phone number
 
-    http://bootstrapvalidator.com/validators/phone/
+    http://formvalidation.io/validators/phone/
     """
     code = 'phone'
     COUNTRIES = {
@@ -271,7 +271,7 @@ class FileValidator(BaseBV):
 
     :Warn The maxSize and type are only used if the browser supports HTML 5 File API.
 
-    http://bootstrapvalidator.com/validators/file/
+    http://formvalidation.io/validators/file/
     """
     code = 'file'
 
