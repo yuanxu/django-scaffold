@@ -152,3 +152,8 @@ bootstrap()
 urls+=discover_admin_urls()
 ```
 
+# 更新记录
+
+## 2015-5-20
+
+* 更新zui 到1.3.1
