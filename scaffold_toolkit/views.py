@@ -27,9 +27,10 @@ class AjaxView(JSONResponseMixin, AjaxResponseMixin, View):
     pass
 
 
-IMAGE_EXT_NAMES = ('.jpg', '.png', '.gif', '.bmp')
-FLASH_EXT_NAMES = ('.swf',)
-MAX_SIZE = 5242880  # 5M
+IMAGE_EXT_NAMES = getattr(settings, 'KINDEDITOR_IMAGE_EXT', ('.jpg', '.png', '.gif', '.bmp'))
+FLASH_EXT_NAMES = getattr(settings, 'KINDEDITOR_FLASH_EXT', ('.swf'))
+MAX_SIZE = getattr(settings, 'KINDEDITOR_UPLOAD_SIZE', 5) * 1024 * 1024  # 5M
+MAX_SIZE_M = MAX_SIZE / 1024 / 1024
 
 
 @csrf_exempt
@@ -54,7 +55,7 @@ def kindeditor_upload_file(request):
 
     if uploaded_file.size > MAX_SIZE:
         return HttpResponse(json.dumps(
-            {'error': 1, 'message': u'上传的文件大小不能超过5MB'}
+            {'error': 1, 'message': u'上传的文件大小不能超过%sMB' % MAX_SIZE_M}
         ))
 
     upload_to = os.path.join(settings.MEDIA_ROOT, datetime.date.today().strftime('upload%Y'),
