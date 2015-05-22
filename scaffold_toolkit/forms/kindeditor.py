@@ -25,7 +25,9 @@ class KindEditor(Textarea):
             return forms.Media(css={'all': ('%sthemes/default/default.css' % editorBasePath,)})
         else:
             return forms.Media(css={'all': ('%sthemes/default/default.css' % editorBasePath,)},
-                               js=('%skindeditor.min.js' % editorBasePath))
+                               js=('%skindeditor.min.js' % editorBasePath,))
+
+    media = property(_media)
 
     def _get_toolbar_items(self):
         if self.toolbar == 'mini':
@@ -48,7 +50,6 @@ class KindEditor(Textarea):
         ))
 
     def render(self, name, value, attrs=None):
-        textarea = super(KindEditor, self).render(name, value, attrs)
         use_require = getattr("settings", "KINDEDITOR_USE_REQUERYJS", False)
         if use_require:
             js_staff = '''<script type="text/javascript">
@@ -73,4 +74,6 @@ class KindEditor(Textarea):
         ''' % (name, name, 'id_' + name, self.scheme,
                self._get_kind_attrs(), reverse('kind_upload'))
         js = js_staff % js
-        return mark_safe(textarea + js)
+        textarea = super(KindEditor, self).render(name, value, attrs)
+        textarea += js
+        return mark_safe(textarea)
