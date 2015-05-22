@@ -1,4 +1,5 @@
 # coding=utf-8
+from django import forms
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.forms import Textarea
@@ -18,10 +19,13 @@ class KindEditor(Textarea):
             self.toolbar = attrs['toolbar']
         super(KindEditor, self).__init__(attrs)
 
-    class Media:
-        css = {'all': (
-            '%sthemes/default/default.css' % editorBasePath,
-        ), }
+    def _media(self):
+        use_require = getattr("settings", "KINDEDITOR_USE_REQUERYJS", False)
+        if use_require:
+            return forms.Media(css={'all': ('%sthemes/default/default.css' % editorBasePath,)})
+        else:
+            return forms.Media(css={'all': ('%sthemes/default/default.css' % editorBasePath,)},
+                               js=('%skindeditor.min.js' % editorBasePath))
 
     def _get_toolbar_items(self):
         if self.toolbar == 'mini':
@@ -45,9 +49,18 @@ class KindEditor(Textarea):
 
     def render(self, name, value, attrs=None):
         textarea = super(KindEditor, self).render(name, value, attrs)
-        textarea += u'''
-            <script type="text/javascript">
-            require(["kindeditor"],function(){
+        use_require = getattr("settings", "KINDEDITOR_USE_REQUERYJS", False)
+        if use_require:
+            js_staff = '''<script type="text/javascript">
+            require(["kindeditor"],function(){ %s });
+            </script>
+            '''
+        else:
+            js_staff = '''<script type="text/javascript">
+            %s
+            </script>
+            '''
+        js = u'''
                  KindEditor.lang('zh_CN');
                 var editor_%s;
                 KindEditor.ready(function(K) {
@@ -57,8 +70,7 @@ class KindEditor(Textarea):
                     uploadJson:'%s',
                     });
                 });
-                });
-            </script>
         ''' % (name, name, 'id_' + name, self.scheme,
                self._get_kind_attrs(), reverse('kind_upload'))
-        return mark_safe(textarea)
+        js = js_staff % js
+        return mark_safe(textarea + js)
