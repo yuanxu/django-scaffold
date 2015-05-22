@@ -21,7 +21,6 @@ from ..components import render_icon, render_alert
 from ..utils import handle_var, parse_token_contents
 from ..text import force_text
 
-
 register = template.Library()
 
 
@@ -456,7 +455,7 @@ def zui_buttons(parser, token):
         {% zui_buttons FIXTHIS %}
     """
     kwargs = parse_token_contents(parser, token)
-    kwargs['nodelist'] = parser.parse(('endbuttons', ))
+    kwargs['nodelist'] = parser.parse(('endbuttons',))
     parser.delete_first_token()
     return ButtonsNode(**kwargs)
 
@@ -524,7 +523,7 @@ def zui_messages(context, *args, **kwargs):
     return get_template('zui/messages.html').render(context)
 
 
-@register.inclusion_tag('zui/pagination.html')
+@register.inclusion_tag('zui/zui_pagination.html')
 def zui_pagination(page, **kwargs):
     """
     Render pagination for a page
@@ -617,12 +616,12 @@ def get_pagination_context(page, pages_to_show=11,
     if url:
         url = url.replace('?&', '?')
     # Set CSS classes, see http://getzui.com/components/#pagination
-    pagination_css_classes = ['pagination']
-    if size == 'small':
-        pagination_css_classes.append('pagination-sm')
-    elif size == 'large':
-        pagination_css_classes.append('pagination-lg')
-        # Build context object
+    pagination_css_classes = ['paper']
+    # if size == 'small':
+    #     pagination_css_classes.append('pagination-sm')
+    # elif size == 'large':
+    #     pagination_css_classes.append('pagination-lg')
+    #     # Build context object
     return {
         'zui_pagination_url': url,
         'num_pages': num_pages,

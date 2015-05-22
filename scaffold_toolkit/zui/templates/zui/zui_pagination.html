@@ -1,6 +1,6 @@
 {% with zui_pagination_url=zui_pagination_url|default:"?" %}
     {% if num_pages > 1 %}
-        <ul class="{{ pagination_css_classes }}">
+        <ul class="pager {{ pagination_css_classes }}">
 
             <li class="previous{% if current_page == 1 %} disabled{% endif %}">
                 <a href="{% if current_page == 1 %}#{% else %}{{ zui_pagination_url }}page=1{% endif %}">&laquo;</a>
