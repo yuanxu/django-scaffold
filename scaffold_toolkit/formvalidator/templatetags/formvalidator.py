@@ -30,6 +30,10 @@ def formvalidator_javascript_url():
 def formvalidator_language_url(language):
     return _get_static_url('formvalidator/js/language/{}.js'.format(language))
 
+@register.simple_tag
+def formvalidator_framework_url(framework):
+    return _get_static_url('formvalidator/js/framework/{}.min.js'.format(framework))
+
 
 @register.simple_tag
 def formvalidator_css_url():
