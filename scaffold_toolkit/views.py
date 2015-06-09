@@ -6,9 +6,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import os
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import View, FormView
 import shortuuid
+from tagging.models import Tag
 
 
 class AjaxFormView(JSONResponseMixin, AjaxResponseMixin, FormView):
@@ -75,3 +76,19 @@ def kindeditor_upload_file(request):
     return HttpResponse(json.dumps(
         {'error': 0, 'url': url_name}
     ))
+
+
+MAX_RESULT = getattr(settings, 'MAX_RESULT', 10)
+
+
+def tag_suggestion(request):
+    """
+    tag建议
+    @param request:
+    @return:
+    """
+    term = request.GET.get('term')
+
+    tags = [{'id': tag.name, 'text': tag.name}
+            for tag in Tag.objects.filter(name__icontains=term)[:MAX_RESULT]]
+    return JsonResponse(tags, safe=False)
