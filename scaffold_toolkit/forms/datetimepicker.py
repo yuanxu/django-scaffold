@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.forms.util import flatatt
 from django.forms.widgets import DateTimeInput, TimeInput
 from django.utils import translation
@@ -17,7 +18,8 @@ except ImportError:  # python3
 
 class DateTimePicker(DateTimeInput):
     class Media:
-        css = {'all': ('zui/lib/datetimepicker/datetimepicker.min.css',), }
+        css = {'all': ('%szui/lib/datetimepicker/datetimepicker.min.css' % settings.STATIC_URL,), }
+        js = ('%szui/lib/datetimepicker/datetimepicker.min.js' % settings.STATIC_URL)
 
     # http://momentjs.com/docs/#/parsing/string-format/
     # http://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
@@ -34,7 +36,7 @@ class DateTimePicker(DateTimeInput):
                   ('ss', r'%S'),
                   ('a', r'%p'),
                   ('ZZ', r'%z'),
-    )
+                  )
 
     @classmethod
     def conv_datetime_format_py2js(cls, format):
@@ -58,7 +60,7 @@ class DateTimePicker(DateTimeInput):
 
     js_template = '''
         <script>
-        require(['jquery','datetimepicker'],function($){
+        $(document).ready(function(){
             $("#%(picker_id)s").datetimepicker(%(options)s);
         })
         </script>'''
@@ -124,7 +126,7 @@ class TimePicker(TimeInput):
                   ('ss', r'%S'),
                   ('a', r'%p'),
                   ('ZZ', r'%z'),
-    )
+                  )
 
     @classmethod
     def conv_datetime_format_py2js(cls, format):
@@ -148,16 +150,10 @@ class TimePicker(TimeInput):
 
     js_template = '''
         <script>
-            (function(window) {
-                var callback = function() {
+            $(document).ready(function(){
                     $(function(){$("#%(picker_id)s").datetimepicker(%(options)s);});
                 };
-                if(window.addEventListener)
-                    window.addEventListener("load", callback, false);
-                else if (window.attachEvent)
-                    window.attachEvent("onload", callback);
-                else window.onload = callback;
-            })(window);
+            });
         </script>'''
 
     def __init__(self, attrs=None, format=None, options=None, div_attrs=None, icon_attrs=None):
