@@ -17,7 +17,7 @@ setup(
     description=u'Django开发中一组常用工具。包括表单生成，验证，富文本编辑器，useragent检测等等',
     include_package_data=True,
     long_description=open(os.path.join(base_dir, 'README.md'), encoding='utf-8').read(),
-    install_requires=['django', 'requests', 'django-braces', 'django-tagging', 'shortuuid'],
+    install_requires=['django', 'requests', 'django-braces', 'shortuuid'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

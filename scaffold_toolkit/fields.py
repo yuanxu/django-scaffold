@@ -1,18 +1,5 @@
-from django.contrib.admin.widgets import AdminTextInputWidget
 from django.db.models import CharField
-from scaffold_toolkit.forms import TagAutocompleteInput
 import shortuuid
-from tagging.fields import TagField
-
-
-class TagAutocompleteField(TagField):
-    def formfield(self, **kwargs):
-        defaults = {'widget': TagAutocompleteInput}
-        defaults.update(kwargs)
-        # As an ugly hack, we override the admin widget
-        if defaults['widget'] == AdminTextInputWidget:
-            defaults['widget'] = TagAutocompleteInput(attrs={'class': 'vTextField'})
-        return super(TagAutocompleteField, self).formfield(**defaults)
 
 
 class ShortUUIDField(CharField):

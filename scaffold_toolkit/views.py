@@ -8,8 +8,8 @@ import os
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View, FormView
+from scaffold_toolkit.tagging.models import Tag
 import shortuuid
-from tagging.models import Tag
 
 
 class AjaxFormView(JSONResponseMixin, AjaxResponseMixin, FormView):

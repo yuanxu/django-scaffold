@@ -1,10 +1,51 @@
-# coding=utf-8
+"""
+Tagging components for Django's form library.
+"""
 from django import forms
-from django.conf import settings
 from django.shortcuts import resolve_url
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
+
+from . import settings
+from .models import Tag
 import os
+from .utils import parse_tag_input
+
+
+class TagAdminForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = ('name',)
+
+    def clean_name(self):
+        value = self.cleaned_data['name']
+        tag_names = parse_tag_input(value)
+        if len(tag_names) > 1:
+            raise forms.ValidationError(_('Multiple tags were given.'))
+        elif len(tag_names[0]) > settings.MAX_TAG_LENGTH:
+            raise forms.ValidationError(
+                _('A tag may be no more than %s characters long.') %
+                settings.MAX_TAG_LENGTH)
+        return value
+
+
+class TagField(forms.CharField):
+    """
+    A ``CharField`` which validates that its input is a valid list of
+    tag names.
+    """
+
+    def clean(self, value):
+        value = super(TagField, self).clean(value)
+        if value == '':
+            return value
+        for tag_name in parse_tag_input(value):
+            if len(tag_name) > settings.MAX_TAG_LENGTH:
+                raise forms.ValidationError(
+                    _('Each tag may be no more than %s characters long.') %
+                    settings.MAX_TAG_LENGTH)
+        return value
 
 
 class TagAutocompleteInput(forms.TextInput):
@@ -28,7 +69,7 @@ class TagAutocompleteInput(forms.TextInput):
 
     def render(self, name, value, attrs=None):
         js = u"""<script>
-    require(['select2','select2_cn'],function(){{
+    $(document).ready(function(){{
     $("#{id_for_label}").select2({{
     placeholder: '科目拼音或名称',
         tags:true,
