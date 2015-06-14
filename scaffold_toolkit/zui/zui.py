@@ -42,6 +42,7 @@ ZUI_DEFAULTS = {
     'model_field_renderers': {
         'default': 'scaffold_toolkit.zui.model_renderers.ModelFieldRenderer'
     },
+    'help_text_as_placeholder': True
 }
 
 # Start with a copy of default settings

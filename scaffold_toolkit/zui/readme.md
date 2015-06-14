@@ -22,3 +22,5 @@
     ...
 ```
 具体可查阅代码历史记录
+
+增加help_text_as_placeholder设置，且修改renderes.field_renders，以实现此功能

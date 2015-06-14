@@ -110,17 +110,17 @@ class FormsetRenderer(BaseRenderer):
         if formset_errors:
             return get_template(
                 'zui/form_errors.html').render(
-                    Context({
-                        'errors': formset_errors,
-                        'form': self.formset,
-                        'layout': self.layout,
-                    })
-                )
+                Context({
+                    'errors': formset_errors,
+                    'form': self.formset,
+                    'layout': self.layout,
+                })
+            )
         return ''
 
     def render(self):
         return self.render_errors() + self.render_management_form() + \
-            self.render_forms()
+               self.render_forms()
 
 
 class FormRenderer(BaseRenderer):
@@ -169,7 +169,7 @@ class FormRenderer(BaseRenderer):
         form_errors = None
         if type == 'all':
             form_errors = self.get_fields_errors() + \
-                self.form.non_field_errors()
+                          self.form.non_field_errors()
         elif type == 'fields':
             form_errors = self.get_fields_errors()
         elif type == 'non_fields':
@@ -178,12 +178,12 @@ class FormRenderer(BaseRenderer):
         if form_errors:
             return get_template(
                 'zui/form_errors.html').render(
-                    Context({
-                        'errors': form_errors,
-                        'form': self.form,
-                        'layout': self.layout,
-                    })
-                )
+                Context({
+                    'errors': form_errors,
+                    'form': self.form,
+                    'layout': self.layout,
+                })
+            )
         return ''
 
     def render(self):
@@ -204,13 +204,16 @@ class FieldRenderer(BaseRenderer):
 
         self.widget = field.field.widget
         self.initial_attrs = self.widget.attrs.copy()
+        help_text_as_placeholder = get_zui_setting('help_text_as_placeholder')
         self.field_help = text_value(mark_safe(field.help_text)) \
-            if self.show_help and field.help_text else ''
+            if self.show_help and not help_text_as_placeholder and field.help_text else ''
         self.field_errors = [conditional_escape(text_value(error))
                              for error in field.errors]
 
         if get_zui_setting('set_placeholder'):
-            self.placeholder = field.label
+            self.placeholder = field.help_text if help_text_as_placeholder and field.help_text \
+                else '' if help_text_as_placeholder and not bool(field.help_text) \
+                else field.label
         else:
             self.placeholder = ''
 
@@ -332,7 +335,7 @@ class FieldRenderer(BaseRenderer):
         """
         # TODO This needs improvement
         return '<div class="row zui-multi-input">' + \
-            '<div class="col-xs-12">' + html + '</div></div>'
+               '<div class="col-xs-12">' + html + '</div></div>'
 
     def post_widget_render(self, html):
         if isinstance(self.widget, RadioSelect):
@@ -358,8 +361,8 @@ class FieldRenderer(BaseRenderer):
 
     def make_input_group(self, html):
         if (
-                (self.addon_before or self.addon_after) and
-                isinstance(self.widget, (TextInput, DateInput, Select))
+                    (self.addon_before or self.addon_after) and
+                    isinstance(self.widget, (TextInput, DateInput, Select))
         ):
             before = '<span class="input-group-addon">{addon}</span>'.format(
                 addon=self.addon_before) if self.addon_before else ''
