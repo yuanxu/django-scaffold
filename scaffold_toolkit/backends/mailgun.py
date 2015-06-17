@@ -1,3 +1,4 @@
+#coding=utf-8
 import requests
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend

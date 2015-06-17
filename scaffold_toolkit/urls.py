@@ -1,3 +1,4 @@
+#coding=utf-8
 from django.conf.urls import url
 from scaffold_toolkit.views import kindeditor_upload_file, tag_suggestion
 
