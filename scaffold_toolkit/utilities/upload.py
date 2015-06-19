@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 import json
 import os
 import datetime
@@ -22,7 +22,7 @@ class UploadTo(object):
 
         name = shortuuid.uuid()
 
-        return "%s%s%s%s" % (self.path, today.strftime(self.fmt), name, ext.lower())
+        return os.path.join(self.path, today.strftime(self.fmt), name, ext.lower())
 
 
 # class who handles the upload
