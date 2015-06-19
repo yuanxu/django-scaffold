@@ -11,18 +11,19 @@ import shortuuid
 
 @deconstructible
 class UploadTo(object):
-    def __init__(self, sub_path, fmt):
+    def __init__(self, sub_path, fmt, rename=True):
         self.path = sub_path
         self.fmt = fmt
+        self.rename = rename
 
     def __call__(self, instance, filename):
         ext = os.path.splitext(filename)[1]
 
         today = datetime.datetime.today()
 
-        name = shortuuid.uuid()
+        name = '%s%s' % (shortuuid.uuid(), ext.lower()) if self.rename else filename
 
-        return os.path.join(self.path, today.strftime(self.fmt), name, ext.lower())
+        return os.path.join(self.path, today.strftime(self.fmt), name)
 
 
 # class who handles the upload
