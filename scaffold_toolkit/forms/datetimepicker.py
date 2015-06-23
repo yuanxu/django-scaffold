@@ -16,27 +16,39 @@ except ImportError:  # python3
     from django.utils.encoding import force_text
 
 
+def get_language():
+    lang = translation.get_language()
+    return 'zh-CN' if lang == 'zh-hans' else lang
+
+
 class DateTimePicker(DateTimeInput):
     class Media:
         css = {'all': ('%szui/lib/datetimepicker/datetimepicker.min.css' % settings.STATIC_URL,), }
-        js = ('%szui/lib/datetimepicker/datetimepicker.min.js' % settings.STATIC_URL)
+        js = ('%szui/lib/datetimepicker/datetimepicker.min.js' % settings.STATIC_URL,)
 
     # http://momentjs.com/docs/#/parsing/string-format/
     # http://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
-    format_map = (('DDD', r'%j'),
-                  ('DD', r'%d'),
-                  ('MMMM', r'%B'),
-                  ('MMM', r'%b'),
-                  ('MM', r'%m'),
-                  ('YYYY', r'%Y'),
-                  ('YY', r'%y'),
-                  ('HH', r'%H'),
-                  ('hh', r'%I'),
-                  ('mm', r'%M'),
-                  ('ss', r'%S'),
-                  ('a', r'%p'),
-                  ('ZZ', r'%z'),
-                  )
+    format_map = (
+        ('d', r'%d'),
+        ('dd', r'%d'),
+        ('m', r'%m'),
+        ('mm', r'%m'),
+        ('yy', r'%y'),
+        ('yyyy', r'%Y'),
+        ('M', r'%b'),
+        ('MM', r'%B'),
+
+        ('HH', r'%I'),
+        ('H', r'%I'),
+        ('hh', r'%H'),
+        ('h', r'%H'),
+        ('i', r'%M'),
+        ('ii', 'r%M'),
+        ('ss', r'%S'),
+
+        ('p', r'%P'),
+        ('P', r'%P'),
+    )
 
     @classmethod
     def conv_datetime_format_py2js(cls, format):
@@ -72,6 +84,10 @@ class DateTimePicker(DateTimeInput):
             div_attrs = {'class': 'input-group date'}
         if format is None and options and options.get('format'):
             format = self.conv_datetime_format_js2py(options.get('format'))
+        elif format:
+            format = self.conv_datetime_format_js2py(format)
+        else:
+            format = self.conv_datetime_format_js2py("yyyy-mm-dd hh:ii")
         super(DateTimePicker, self).__init__(attrs, format)
         if 'class' not in self.attrs:
             self.attrs['class'] = 'form-control'
@@ -82,7 +98,13 @@ class DateTimePicker(DateTimeInput):
             self.options = False
         else:
             self.options = options and options.copy() or {}
-            self.options['language'] = translation.get_language()
+            self.options['language'] = get_language()
+            self.options['weekStart'] = 1
+            self.options['todayBtn'] = 1
+            self.options['autoclose'] = 1
+            self.options['todayHighlight'] = 1
+            self.options['startView'] = 2
+            self.options['forceParse'] = 0
             if format and not self.options.get('format') and not self.attrs.get('date-format'):
                 self.options['format'] = self.conv_datetime_format_py2js(format)
 
@@ -112,13 +134,34 @@ class DateTimePicker(DateTimeInput):
         return mark_safe(force_text(html + js))
 
 
+class DatePicker(DateTimePicker):
+    def __init__(self, attrs=None, format=None, options=None, div_attrs=None, icon_attrs=None):
+        if format is None and options and options.get('format'):
+            format = options.get('format')
+        else:
+            format = "yyyy-mm-dd"
+        options = options or {}
+        options['weekStart'] = 1
+        options['todayBtn'] = 1
+        options['autoclose'] = 1
+        options['todayHighlight'] = 1
+        options['startView'] = 2
+        options['minView'] = 2
+        options['forceParse'] = 0
+        options['format'] = format
+        options['language'] = get_language()
+        super(DatePicker, self).__init__(attrs=attrs, format=format, options=options, div_attrs=div_attrs,
+                                         icon_attrs=icon_attrs)
+
+
 # As a TimeInput
 
 class TimePicker(TimeInput):
     class Media:
         css = {'all': ('zui/lib/datetimepicker/datetimepicker.min.css',), }
+        js = ('%szui/lib/datetimepicker/datetimepicker.min.js' % settings.STATIC_URL,)
 
-    # http://momentjs.com/docs/#/parsing/string-format/
+    # http://www.malot.fr/bootstrap-datetimepicker/
     # http://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
     format_map = (('HH', r'%H'),
                   ('hh', r'%I'),
@@ -151,8 +194,7 @@ class TimePicker(TimeInput):
     js_template = '''
         <script>
             $(document).ready(function(){
-                    $(function(){$("#%(picker_id)s").datetimepicker(%(options)s);});
-                };
+                    $("#%(picker_id)s").datetimepicker(%(options)s);
             });
         </script>'''
 
@@ -163,6 +205,10 @@ class TimePicker(TimeInput):
             div_attrs = {'class': 'input-group date'}
         if format is None and options and options.get('format'):
             format = self.conv_datetime_format_js2py(options.get('format'))
+        elif format:
+            format = self.conv_datetime_format_js2py(format)
+        else:
+            format = self.conv_datetime_format_js2py("hh:ii")
         super(TimePicker, self).__init__(attrs, format)
         if 'class' not in self.attrs:
             self.attrs['class'] = 'form-control'
@@ -173,7 +219,15 @@ class TimePicker(TimeInput):
             self.options = False
         else:
             self.options = options and options.copy() or {}
-            self.options['language'] = translation.get_language()
+            self.options['language'] = get_language()
+            self.options['weekStart'] = 1
+            self.options['todayBtn'] = 1
+            self.options['autoclose'] = 1
+            self.options['todayHighlight'] = 1
+            self.options['startView'] = 1
+            self.options['minView'] = 0
+            self.options['maxView'] = 1
+            self.options['forceParse'] = 0
             if format and not self.options.get('format') and not self.attrs.get('date-format'):
                 self.options['format'] = self.conv_datetime_format_py2js(format)
 

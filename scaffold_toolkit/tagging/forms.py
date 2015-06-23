@@ -51,6 +51,7 @@ class TagField(forms.CharField):
 class TagAutocompleteInput(forms.TextInput):
     def _media(self):
         from django.utils import translation
+        from django.conf import settings
 
         lang = translation.get_language().replace('_', '-')
         if lang == 'zh-hans':
@@ -71,7 +72,7 @@ class TagAutocompleteInput(forms.TextInput):
         js = u"""<script>
     $(document).ready(function(){{
     $("#{id_for_label}").select2({{
-    placeholder: '科目拼音或名称',
+    placeholder: '{placeholder}',
         tags:true,
         multiple: true,
          tokenSeparators: [",", " ",";"],
@@ -108,8 +109,10 @@ class TagAutocompleteInput(forms.TextInput):
     }})
     </script>
     """
+        placeholder = ''
         js = js.format(id_for_label=force_text(self.id_for_label('id_%s' % name)),
-                       url=force_text(resolve_url('tag_suggestion')))
-
-        code = "%s %s" % (super(TagAutocompleteInput, self).render(name, value, attrs), js)
+                       url=force_text(resolve_url('tag_suggestion')), placeholder=placeholder)
+        code = u'<input id="{id}" name="name" value="{value}" class="form-control select2">'.format(
+            id=self.id_for_label('id_%s' % name), name=name, value=value)
+        code = u"%s %s" % (code, js)
         return mark_safe(code)
