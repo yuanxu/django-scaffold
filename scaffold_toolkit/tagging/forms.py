@@ -112,7 +112,7 @@ class TagAutocompleteInput(forms.TextInput):
         placeholder = ''
         js = js.format(id_for_label=force_text(self.id_for_label('id_%s' % name)),
                        url=force_text(resolve_url('tag_suggestion')), placeholder=placeholder)
-        code = u'<input id="{id}" name="name" value="{value}" class="form-control select2">'.format(
+        code = u'<input id="{id}" name="{name}" value="{value}" class="form-control select2">'.format(
             id=self.id_for_label('id_%s' % name), name=name, value=value if value else "")
         code = u"%s %s" % (code, js)
         return mark_safe(code)

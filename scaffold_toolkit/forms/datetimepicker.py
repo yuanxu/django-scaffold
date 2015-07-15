@@ -46,7 +46,7 @@ class DateTimePicker(DateTimeInput):
         ('H', r'%I'),
         ('hh', r'%H'),
         ('h', r'%H'),
-        ('ii', 'r%M'),
+        ('ii', r'%M'),
         ('i', r'%M'),
 
         ('ss', r'%S'),
@@ -65,7 +65,7 @@ class DateTimePicker(DateTimeInput):
     def conv_datetime_format_js2py(cls, format):
         for js, py in cls.format_map:
             format = format.replace(js, py)
-        return format
+        return format.replace("%%","%") # fix some error
 
     html_template = '''
         <div%(div_attrs)s>
