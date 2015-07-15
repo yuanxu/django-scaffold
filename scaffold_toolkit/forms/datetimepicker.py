@@ -29,21 +29,26 @@ class DateTimePicker(DateTimeInput):
     # http://momentjs.com/docs/#/parsing/string-format/
     # http://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
     format_map = (
-        ('d', r'%d'),
         ('dd', r'%d'),
-        ('m', r'%m'),
+        ('d', r'%d'),
+
         ('mm', r'%m'),
-        ('yy', r'%y'),
+        ('m', r'%m'),
+
         ('yyyy', r'%Y'),
-        ('M', r'%b'),
+        ('yy', r'%y'),
+
         ('MM', r'%B'),
+        ('M', r'%b'),
+
 
         ('HH', r'%I'),
         ('H', r'%I'),
         ('hh', r'%H'),
         ('h', r'%H'),
-        ('i', r'%M'),
         ('ii', 'r%M'),
+        ('i', r'%M'),
+
         ('ss', r'%S'),
 
         ('p', r'%P'),
