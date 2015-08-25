@@ -41,7 +41,6 @@ class DateTimePicker(DateTimeInput):
         ('MM', r'%B'),
         ('M', r'%b'),
 
-
         ('HH', r'%I'),
         ('H', r'%I'),
         ('hh', r'%H'),
@@ -65,7 +64,7 @@ class DateTimePicker(DateTimeInput):
     def conv_datetime_format_js2py(cls, format):
         for js, py in cls.format_map:
             format = format.replace(js, py)
-        return format.replace("%%","%") # fix some error
+        return format.replace("%%", "%")  # fix some error
 
     html_template = '''
         <div%(div_attrs)s>
@@ -82,7 +81,9 @@ class DateTimePicker(DateTimeInput):
         })
         </script>'''
 
-    def __init__(self, attrs=None, format=None, options=None, div_attrs=None, icon_attrs=None):
+    def __init__(self, attrs=None, format=None, options=None, show_icon=False, div_attrs=None, icon_attrs=None):
+        if not show_icon:
+            self.html_template = "<input%(input_attrs)s/>"
         if not icon_attrs:
             icon_attrs = {'class': 'icon-calendar'}
         if not div_attrs:
@@ -140,7 +141,7 @@ class DateTimePicker(DateTimeInput):
 
 
 class DatePicker(DateTimePicker):
-    def __init__(self, attrs=None, format=None, options=None, div_attrs=None, icon_attrs=None):
+    def __init__(self, attrs=None, format=None, options=None, show_icon=False, div_attrs=None, icon_attrs=None):
         if format is None and options and options.get('format'):
             format = options.get('format')
         else:
@@ -155,7 +156,8 @@ class DatePicker(DateTimePicker):
         options['forceParse'] = 0
         options['format'] = format
         options['language'] = get_language()
-        super(DatePicker, self).__init__(attrs=attrs, format=format, options=options, div_attrs=div_attrs,
+        super(DatePicker, self).__init__(attrs=attrs, format=format, options=options, show_icon=show_icon,
+                                         div_attrs=div_attrs,
                                          icon_attrs=icon_attrs)
 
 
@@ -203,7 +205,9 @@ class TimePicker(TimeInput):
             });
         </script>'''
 
-    def __init__(self, attrs=None, format=None, options=None, div_attrs=None, icon_attrs=None):
+    def __init__(self, attrs=None, format=None, options=None, show_icon=False, div_attrs=None, icon_attrs=None):
+        if not show_icon:
+            self.html_template = "<input%(input_attrs)s/>"
         if not icon_attrs:
             icon_attrs = {'class': 'icon-time'}
         if not div_attrs:
