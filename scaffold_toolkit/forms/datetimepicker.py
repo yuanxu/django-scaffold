@@ -84,6 +84,7 @@ class DateTimePicker(DateTimeInput):
     def __init__(self, attrs=None, format=None, options=None, show_icon=False, div_attrs=None, icon_attrs=None):
         if not show_icon:
             self.html_template = "<input%(input_attrs)s/>"
+        self.show_icon = show_icon
         if not icon_attrs:
             icon_attrs = {'class': 'icon-calendar'}
         if not div_attrs:
@@ -123,7 +124,7 @@ class DateTimePicker(DateTimeInput):
             input_attrs['value'] = force_text(self._format_value(value))
         input_attrs = dict([(key, conditional_escape(val)) for key, val in input_attrs.items()])  # python2.6 compatible
         if not self.picker_id:
-            self.picker_id = input_attrs.get('id', '') + '_picker'
+            self.picker_id = input_attrs.get('id', '') + ('' if self.show_icon else '_picker')
         self.div_attrs['id'] = self.picker_id
         picker_id = conditional_escape(self.picker_id)
         div_attrs = dict(
@@ -142,6 +143,7 @@ class DateTimePicker(DateTimeInput):
 
 class DatePicker(DateTimePicker):
     def __init__(self, attrs=None, format=None, options=None, show_icon=False, div_attrs=None, icon_attrs=None):
+        self.show_icon = show_icon
         if format is None and options and options.get('format'):
             format = options.get('format')
         else:
@@ -206,6 +208,7 @@ class TimePicker(TimeInput):
         </script>'''
 
     def __init__(self, attrs=None, format=None, options=None, show_icon=False, div_attrs=None, icon_attrs=None):
+        self.show_icon = show_icon
         if not show_icon:
             self.html_template = "<input%(input_attrs)s/>"
         if not icon_attrs:
@@ -249,7 +252,7 @@ class TimePicker(TimeInput):
             input_attrs['value'] = force_text(self._format_value(value))
         input_attrs = dict([(key, conditional_escape(val)) for key, val in input_attrs.items()])  # python2.6 compatible
         if not self.picker_id:
-            self.picker_id = input_attrs.get('id', '') + '_picker'
+            self.picker_id = input_attrs.get('id', '') +  ('' if self.show_icon else '_picker')
         self.div_attrs['id'] = self.picker_id
         picker_id = conditional_escape(self.picker_id)
         div_attrs = dict(
