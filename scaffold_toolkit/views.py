@@ -3,6 +3,8 @@ import json
 import datetime
 
 from braces.views import AjaxResponseMixin, JSONResponseMixin, PermissionRequiredMixin, LoginRequiredMixin
+from django.core.files.base import ContentFile
+from django.core.files.storage import DefaultStorage, default_storage
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import os
@@ -53,6 +55,8 @@ FLASH_EXT_NAMES = getattr(settings, 'KINDEDITOR_FLASH_EXT', ('.swf'))
 MAX_SIZE = getattr(settings, 'KINDEDITOR_UPLOAD_SIZE', 5) * 1024 * 1024  # 5M
 MAX_SIZE_M = MAX_SIZE / 1024 / 1024
 
+storage = default_storage
+
 
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -79,20 +83,17 @@ def kindeditor_upload_file(request):
             {'error': 1, 'message': u'上传的文件大小不能超过%sMB' % MAX_SIZE_M}
         ))
 
-    upload_to = os.path.join(settings.MEDIA_ROOT, datetime.date.today().strftime('upload%Y'),
+    upload_to = os.path.join(datetime.date.today().strftime('kindeditor/upload%Y'),
                              datetime.date.today().strftime("%m%d"))
 
     if not os.path.exists(upload_to):
         os.makedirs(upload_to)
 
     file_name = shortuuid.uuid() + ext
-    with open(os.path.join(upload_to, file_name), 'wb+') as f:
-        for chunk in uploaded_file.chunks():
-            f.write(chunk)
 
-    url_name = "{}{}/{}/{}".format(settings.MEDIA_URL,
-                                   datetime.date.today().strftime('upload%Y'), datetime.date.today().strftime("%m%d"),
-                                   file_name)
+    final_name = storage.save(os.path.join(upload_to, file_name), uploaded_file)
+
+    url_name = "{}{}".format(settings.MEDIA_URL, final_name)
     return HttpResponse(json.dumps(
         {'error': 0, 'url': url_name}
     ))

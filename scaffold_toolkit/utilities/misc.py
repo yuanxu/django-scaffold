@@ -1,10 +1,4 @@
 # coding=utf-8
-from PIL import Image
-import os
-import random
-from django.conf import settings
-import qrcode
-import shortuuid
 
 
 def get_remote_addr(request):
@@ -17,4 +11,3 @@ def get_form_error_message(form):
     for k in errors:
         result.append(u'\r\n'.join(errors[k]))
     return u'\r\n'.join(result)
-
