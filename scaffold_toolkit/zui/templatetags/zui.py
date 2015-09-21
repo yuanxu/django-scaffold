@@ -634,3 +634,32 @@ def get_pagination_context(page, pages_to_show=11,
         'pagination_css_classes': ' '.join(pagination_css_classes),
         'parameter_name': parameter_name,
     }
+
+
+@register.simple_tag
+def zui_static(field_name, field_value, label_css_class='col-md-3', field_css_field='col-md-9'):
+    """
+
+    :param field_name:
+    :param field_value:
+    :param label_css_class:
+    :param field_css_field:
+    :return:
+    """
+
+    tmp = u"""
+    <div class="form-group">
+    <label class="{label_css_class} control-label">{field_name}</label>
+    <div class="{field_css_class}">
+      <p class="form-control-static">{field_value}</p>
+    </div>
+  </div>
+    """
+    if isinstance(field_value, bool):
+        field_value = u'是' if field_value else u'否'
+    else:
+        field_value = field_value if field_value else u''
+    return tmp.format(**{'label_css_class': label_css_class,
+                         'field_name': field_name,
+                         'field_css_class': field_css_field,
+                         'field_value': field_value})

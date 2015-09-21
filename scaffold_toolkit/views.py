@@ -1,8 +1,8 @@
-#coding=utf-8
+# coding=utf-8
 import json
 import datetime
 
-from braces.views import AjaxResponseMixin, JSONResponseMixin
+from braces.views import AjaxResponseMixin, JSONResponseMixin, PermissionRequiredMixin, LoginRequiredMixin
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import os
@@ -10,6 +10,7 @@ from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View, FormView
 from scaffold_toolkit.tagging.models import Tag
+from scaffold_toolkit.utilities.misc import get_form_error_message
 import shortuuid
 
 
@@ -22,11 +23,29 @@ class AjaxFormView(JSONResponseMixin, AjaxResponseMixin, FormView):
         :return:
         """
         return self.render_json_response({'success': False,
-                                          'msg': json.loads(form.errors.as_json())})
+                                          'msg': get_form_error_message(form)})
 
 
 class AjaxView(JSONResponseMixin, AjaxResponseMixin, View):
     pass
+
+
+class PermissionRequiredAjaxView(PermissionRequiredMixin, AjaxView):
+    """
+    有权限要求的AjaxView
+    """
+
+    def no_permissions_fail(self, request=None):
+        return self.render_json_response({'success': False, 'msg': u'没有权限'})
+
+
+class LoginRequiredAjaxView(LoginRequiredMixin, AjaxView):
+    """
+    有登录要求的AjaxView
+    """
+
+    def no_permissions_fail(self, request=None):
+        return self.render_json_response({'success': False, 'msg': u'没有权限'})
 
 
 IMAGE_EXT_NAMES = getattr(settings, 'KINDEDITOR_IMAGE_EXT', ('.jpg', '.png', '.gif', '.bmp'))
