@@ -2,7 +2,8 @@
 
 
 def get_remote_addr(request):
-    return request.META.get('HTTP_X_FORWARDED_FOR', request.META['REMOTE_ADDR'])
+    remote_addr = request.META.get('HTTP_X_FORWARDED_FOR', request.META['REMOTE_ADDR'])
+    return remote_addr.split(',')[0]
 
 
 def get_form_error_message(form):
