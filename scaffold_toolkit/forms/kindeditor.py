@@ -41,6 +41,8 @@ class KindEditor(Textarea):
             ,items : ['bold', 'italic', 'underline', 'strikethrough', 'removeformat','|','insertorderedlist', 'insertunorderedlist',
                    'forecolor', 'hilitecolor', 'fontname', 'fontsize','subscript','superscript',  '|', 'link', 'unlink', 'emoticons',
                    'shcode', 'image', 'flash', 'quote', '|','about']"""
+        else:
+            return """,items: %s""" % self.toolbar
 
     def _get_kind_attrs(self):
         return ''.join((
