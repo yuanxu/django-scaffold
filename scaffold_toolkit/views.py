@@ -3,6 +3,7 @@ import json
 import datetime
 from braces.views import AjaxResponseMixin, JSONResponseMixin, PermissionRequiredMixin, LoginRequiredMixin
 from django.core.files.storage import default_storage
+from django.shortcuts import resolve_url
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import os
@@ -46,6 +47,16 @@ class LoginRequiredAjaxView(LoginRequiredMixin, AjaxView):
 
     def no_permissions_fail(self, request=None):
         return self.render_json_response({'success': False, 'msg': u'没有权限'})
+
+
+class DialogMixin(object):
+    def get_success_url(self):
+        return resolve_url('dialog_success')
+
+
+class NextRedirectMixin(object):
+    def get_success_url(self):
+        return self.request.GET.get('next', self.success_url)
 
 
 class OrderableListMixin(olm):
