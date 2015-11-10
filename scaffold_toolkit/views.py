@@ -1,7 +1,6 @@
 # coding=utf-8
 import json
 import datetime
-
 from braces.views import AjaxResponseMixin, JSONResponseMixin, PermissionRequiredMixin, LoginRequiredMixin
 from django.core.files.storage import default_storage
 from django.views.decorators.csrf import csrf_exempt
@@ -12,6 +11,7 @@ from django.http import HttpResponse
 from django.views.generic import View, FormView
 from scaffold_toolkit.utilities.misc import get_form_error_message
 import shortuuid
+from braces.views import OrderableListMixin as olm
 
 
 class AjaxFormView(JSONResponseMixin, AjaxResponseMixin, FormView):
@@ -46,6 +46,39 @@ class LoginRequiredAjaxView(LoginRequiredMixin, AjaxView):
 
     def no_permissions_fail(self, request=None):
         return self.render_json_response({'success': False, 'msg': u'没有权限'})
+
+
+class OrderableListMixin(olm):
+    """
+    根据zui.datatable排序
+    """
+
+    def get_ordered_queryset(self, queryset=None):
+        """
+        Augments ``QuerySet`` with order_by statement if possible
+
+        :param QuerySet queryset: ``QuerySet`` to ``order_by``
+        :return: QuerySet
+        """
+        if 'order_by' in self.request.GET:
+            return super(OrderableListMixin, self).get_ordered_queryset(queryset)
+        try:
+            get_order_by = int(self.request.GET.get("index"))
+
+            order_by = self.get_orderable_columns()[get_order_by]
+            if not order_by:
+                order_by = self.get_orderable_columns_default()
+        except:
+            order_by = self.get_orderable_columns_default()
+
+        self.order_by = order_by
+        self.ordering = 'desc' if order_by.startswith("-") else "asc"
+
+        if order_by and self.request.GET.get("ordering", "asc") == "desc":
+            order_by = "-" + order_by if not order_by.startswith("-") else order_by
+            self.ordering = "desc"
+
+        return queryset.order_by(order_by)
 
 
 IMAGE_EXT_NAMES = getattr(settings, 'KINDEDITOR_IMAGE_EXT', ('.jpg', '.png', '.gif', '.bmp'))
