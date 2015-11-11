@@ -46,7 +46,7 @@ class LoginRequiredAjaxView(LoginRequiredMixin, AjaxView):
     """
 
     def no_permissions_fail(self, request=None):
-        return self.render_json_response({'success': False, 'msg': u'没有权限'})
+        return self.render_json_response({'success': False, 'msg': u'请先登录'})
 
 
 class DialogMixin(object):
