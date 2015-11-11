@@ -8,10 +8,12 @@ class TagAutocompleteInput(forms.TextInput):
     class Media:
         css = {'all': ['javascript/library/select2-3.5.2/select2.css',
                        'javascript/library/select2-3.5.2/select2-bootstrap.css']}
+        js = ['javascript/library/select2-3.5.2/select2.min.js',
+              'javascript/library/select2-3.5.2/select2_locale_zh-CN.js']
 
     def render(self, name, value, attrs=None):
         js = u"""<script>
-        require(['select2','select2_cn'],function(){{
+        $(document).ready(function(){{
         $("#{id_for_label}").select2({{
         placeholder: '{placeholder}',
             tags:true,
