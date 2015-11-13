@@ -29,16 +29,7 @@ class TagAutocompleteInput(forms.TextInput):
                     return {{results: data}};
                 }}
             }},
-            createSearchChoice: function(term, data) {{
-                if ($(data).filter(function() {{
-                  return this.text.localeCompare(term) === 0;
-                }}).length === 0) {{
-                  return {{
-                    id: term,
-                    text: term
-                  }};
-                }}
-            }},
+            {create_choice}
             initSelection: function (element, callback) {{
                 var data = [];
                 $(element.val().split(",")).each(function (index,name) {{
@@ -54,7 +45,17 @@ class TagAutocompleteInput(forms.TextInput):
         """
         js = js.format(id_for_label=force_text(self.id_for_label('id_%s' % name)),
                        url=force_text(resolve_url('tag_suggestion')),
-                       placeholder=attrs.get('placeholder', '请输入') if attrs else '请输入')
+                       placeholder=attrs.get('placeholder', '') if attrs else '',
+                       create_choice=""" createSearchChoice: function(term, data) {
+                if ($(data).filter(function() {
+                  return this.text.localeCompare(term) === 0;
+                }).length === 0) {
+                  return {
+                    id: term,
+                    text: term
+                  };
+                }
+           },""" if attrs and attrs.get('create_choice', True) else "")
 
         code = "%s %s" % (super(TagAutocompleteInput, self).render(name, value, attrs), js)
         return mark_safe(code)
