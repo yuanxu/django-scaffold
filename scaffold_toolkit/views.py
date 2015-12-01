@@ -129,14 +129,11 @@ def kindeditor_upload_file(request):
     upload_to = os.path.join(datetime.date.today().strftime('kindeditor/upload%Y'),
                              datetime.date.today().strftime("%m%d"))
 
-    if not os.path.exists(upload_to):
-        os.makedirs(upload_to)
-
     file_name = shortuuid.uuid() + ext
 
     final_name = storage.save(os.path.join(upload_to, file_name), uploaded_file)
 
-    url_name = "{}{}".format(settings.MEDIA_URL, final_name)
+    url_name = storage.url(final_name)
     return HttpResponse(json.dumps(
         {'error': 0, 'url': url_name}
     ))
