@@ -4,11 +4,6 @@ from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.mail.message import sanitize_address
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 
 class MailgunAPIError(Exception):
     pass
@@ -33,7 +28,7 @@ class MailgunBackend(BaseEmailBackend):
             else:
                 raise
 
-        self._api_url = "https://api.mailgun.net/v2/%s/" % self._server_name
+        self._api_url = "https://api.mailgun.net/v3/%s/" % self._server_name
 
     def open(self):
         """Stub for open connection, all sends are done over HTTP POSTs
@@ -63,7 +58,7 @@ class MailgunBackend(BaseEmailBackend):
                          'o:tracking': 'yes'
                      },
                      files={
-                         "message": StringIO(email_message.message().as_string()),
+                         "message": email_message.message().as_string(),
                      }
             )
         except:
