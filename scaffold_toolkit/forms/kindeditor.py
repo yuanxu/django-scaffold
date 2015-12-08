@@ -22,9 +22,11 @@ class KindEditor(Textarea):
     def _media(self):
         use_require = getattr("settings", "KINDEDITOR_USE_REQUERYJS", False)
         if use_require:
-            return forms.Media(css={'all': ('%sthemes/default/default.css' % editorBasePath,)})
+            return forms.Media(css={'all': ('%skindeditor.min.css' % editorBasePath,
+                                            '%sthemes/default/default.css' % editorBasePath,)})
         else:
-            return forms.Media(css={'all': ('%sthemes/default/default.css' % editorBasePath,)},
+            return forms.Media(css={'all': ('%skindeditor.min.css' % editorBasePath,
+                                            '%sthemes/default/default.css' % editorBasePath,)},
                                js=('%skindeditor.min.js' % editorBasePath,))
 
     media = property(_media)
@@ -34,7 +36,7 @@ class KindEditor(Textarea):
             return """
             ,items : ['fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
             'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
-            'insertunorderedlist', '|', 'emoticons', 'image', 'link']
+            'insertunorderedlist', '|', 'emoticons', 'image', 'link', '|','about']
             """
         elif self.toolbar == 'small':
             return """
@@ -65,16 +67,28 @@ class KindEditor(Textarea):
             '''
         js = u'''
                  KindEditor.lang('zh_CN');
-                var editor_%s;
-                KindEditor.ready(function(K) {
-                    editor_%s = K.create('#%s',
-                    {themeType:'%s'%s,
-                    filterMode:false,
-                    uploadJson:'%s',
-                    });
-                });
-        ''' % (name, name, 'id_' + name, self.scheme,
-               self._get_kind_attrs(), reverse('kind_upload'))
+                var editor_{name};
+                var is_{name}_creating = true;
+                KindEditor.ready(function(K) {{
+                    editor_{name} = K.create('#id_{name}',{{
+                        themeType:'{schema}'{attrs},
+                        filterMode:false,
+                        uploadJson:'{upload_url}',
+                        afterChange: function () {{
+                            this.sync();
+                            if(is_{name}_creating)
+                                is_{name}_creating = false;
+                            else
+                                $('#id_{name}').change();
+                        }},
+                        afterBlur: function () {{
+                            this.sync();
+                            $('#id_{name}').change();
+                        }}
+                    }});
+                }});
+        '''.format(name=name, schema=self.scheme,
+                   attrs=self._get_kind_attrs(), upload_url=reverse('kind_upload'))
         js = js_staff % js
         textarea = super(KindEditor, self).render(name, value, attrs)
         textarea += js

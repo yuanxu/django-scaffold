@@ -1,6 +1,5 @@
 # coding=utf-8
 import json
-
 from django import template
 from django.conf import settings
 from django.forms import forms
@@ -8,9 +7,7 @@ from django.forms import fields
 from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator
 from django.utils.safestring import mark_safe
 from scaffold_toolkit.formvalidator.forms.validators import BaseBV, ImageFileValidator
-
 from .utils import convert_datetime_python_to_javascript, get_language
-
 
 register = template.Library()
 
@@ -22,22 +19,26 @@ def _get_static_url(path):
 
 
 @register.simple_tag
-def formvalidator_javascript_url():
-    return _get_static_url('formvalidator/js/formValidation.min.js')
+def formvalidator_javascript():
+    return '<script src="{url}"></script>'.format(url=_get_static_url('formvalidator/js/formValidation.js'))
 
 
 @register.simple_tag
-def formvalidator_language_url(language):
-    return _get_static_url('formvalidator/js/language/{}.js'.format(language))
-
-@register.simple_tag
-def formvalidator_framework_url(framework):
-    return _get_static_url('formvalidator/js/framework/{}.min.js'.format(framework))
+def formvalidator_language(language):
+    return '<script src="{url}"></script>'.format(
+        url=_get_static_url('formvalidator/js/language/{}.js'.format(language)))
 
 
 @register.simple_tag
-def formvalidator_css_url():
-    return _get_static_url('formvalidator/css/formValidation.min.css')
+def formvalidator_framework(framework):
+    return '<script src="{url}"></script>'.format(
+        url=_get_static_url('formvalidator/js/framework/{}.js'.format(framework)))
+
+
+@register.simple_tag
+def formvalidator_css():
+    return '<link href="{url}" rel="stylesheet" />'.format(
+        url=_get_static_url('formvalidator/css/formValidation.min.css'))
 
 
 @register.simple_tag
@@ -87,15 +88,20 @@ def formvalidator(selector, form, requirejs=False, *args, **kwargs):
         icon_code = icon
     else:
         icon_code = 'null'
+    language = get_language()
+    if language == 'zh_HANS':
+        language = 'zh_CN'
     vld_code = code.format(selector=selector, container=container, icon=icon_code,
-                           fields=json.dumps(validators, indent=4), lang=get_language())
+                           fields=json.dumps(validators, indent=4), lang=language)
     if requirejs:
         depends = '"jquery","formValidator"'
         language = kwargs.pop('language', get_language())
         depends = '{},"formValidator/language/{}"'.format(depends, language)
         vld_code = u'requirejs([{}],function(){{ {} }})'.format(depends, vld_code)
 
-    return mark_safe(get_require_config_code() + vld_code)
+        return mark_safe("<script>{}</script>".format(get_require_config_code() + vld_code))
+    else:
+        return mark_safe("<script>{}</script>".format(vld_code))
 
 
 @register.simple_tag
