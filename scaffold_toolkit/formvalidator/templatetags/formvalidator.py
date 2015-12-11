@@ -61,11 +61,11 @@ def formvalidator(selector, form, requirejs=False, *args, **kwargs):
         validators[field.name] = render_field(field)
     code = (u"$(document).ready(function() {{ \r\n"
             u"      $('{selector}').formValidation({{  \r\n"
-            u"          framework: 'bootstrap',"
+            u"          framework: 'bootstrap',  \r\n"
             u"          err:{{container:'{container}'}},  \r\n"
             u"          icon: {icon},  \r\n"
-            u"          locale:'{lang}',"
-            u"          excluded:'{excluded}'"
+            u"          locale:'{lang}',  \r\n"
+            u"          excluded:'{excluded}',  \r\n"
             u"          fields:{fields} \r\n"
             u"      }}) \r\n"
             u'  }});')
