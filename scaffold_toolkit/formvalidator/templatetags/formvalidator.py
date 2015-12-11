@@ -47,13 +47,14 @@ def formvalidator(selector, form, requirejs=False, *args, **kwargs):
      :type form: django.forms.Form
     :param requirejs:
     :param args:
-    :param kwargs:(language)
+    :param kwargs:(language,excluded)
     :return:
     """
     if not selector.startswith(u'.') and not selector.startswith('#'):
         selector = '#' + selector
     container = kwargs.pop('err.container', '') or kwargs.pop('container', '')
     icon = kwargs.pop('icon', None)
+    excluded = kwargs.pop('excluded', ':disabled, :hidden, :not(:visible)')
 
     validators = {}
     for field in form:
@@ -64,6 +65,7 @@ def formvalidator(selector, form, requirejs=False, *args, **kwargs):
             u"          err:{{container:'{container}'}},  \r\n"
             u"          icon: {icon},  \r\n"
             u"          locale:'{lang}',"
+            u"          excluded:'{excluded}'"
             u"          fields:{fields} \r\n"
             u"      }}) \r\n"
             u'  }});')
@@ -88,6 +90,7 @@ def formvalidator(selector, form, requirejs=False, *args, **kwargs):
     if language == 'zh_HANS':
         language = 'zh_CN'
     vld_code = code.format(selector=selector, container=container, icon=icon_code,
+                           excluded=excluded,
                            fields=json.dumps(validators, indent=4), lang=language)
     if requirejs:
         depends = '"jquery","formValidator"'
