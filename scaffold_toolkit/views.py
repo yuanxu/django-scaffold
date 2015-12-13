@@ -17,6 +17,8 @@ from tagging.models import Tag
 
 
 class AjaxFormView(JSONResponseMixin, AjaxResponseMixin, FormView):
+    content_type = u"application/json; charset=UTF-8"
+
     def form_invalid(self, form):
         """
         表单校验错误
@@ -29,7 +31,7 @@ class AjaxFormView(JSONResponseMixin, AjaxResponseMixin, FormView):
 
 
 class AjaxView(JSONResponseMixin, AjaxResponseMixin, View):
-    pass
+    content_type = u"application/json; charset=UTF-8"
 
 
 class PermissionRequiredAjaxView(PermissionRequiredMixin, AjaxView):
