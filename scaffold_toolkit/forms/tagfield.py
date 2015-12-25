@@ -11,7 +11,14 @@ class TagAutocompleteInput(forms.TextInput):
         js = ['javascript/library/select2-3.5.2/select2.min.js',
               'javascript/library/select2-3.5.2/select2_locale_zh-CN.js']
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, create_choice=True, attrs=None):
+        """
+        :param name: 控件名字
+        :param value: 默认值
+        :param create_choice: 是否创建新的Tag
+        :param attrs: 附加的html属性
+        """
+        create_new_tag = create_choice or attrs and attrs.get('create_choice', True)
         js = u"""<script>
         $(document).ready(function(){{
         $("#{id_for_label}").select2({{
@@ -55,7 +62,7 @@ class TagAutocompleteInput(forms.TextInput):
                     text: term
                   };
                 }
-           },""" if attrs and attrs.get('create_choice', True) else "")
+           },""" if create_new_tag else "")
 
         code = "%s %s" % (super(TagAutocompleteInput, self).render(name, value, attrs), js)
         return mark_safe(code)
