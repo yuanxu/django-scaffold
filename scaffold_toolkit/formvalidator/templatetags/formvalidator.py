@@ -23,11 +23,11 @@ def formvalidator_javascript(framework='bootstrap', language=None):
     language = get_language() if language is None else language
     language = 'zh_CN' if language == 'zh_HANS' else language
     return '{base}{framework}{language}'.format(
-            base='<script src="{url}"></script>'.format(url=_get_static_url('formvalidator/js/formValidation.js')),
+            base='<script src="{url}"></script>'.format(url=_get_static_url('formvalidator/js/formValidation.min.js')),
             framework='<script src="{url}"></script>'.format(
-                    url=_get_static_url('formvalidator/js/framework/{}.js'.format(framework))),
+                    url=_get_static_url('formvalidator/js/framework/{}.min.js'.format(framework))),
             language='<script src="{url}"></script>'.format(
-                    url=_get_static_url('formvalidator/js/language/{}.js'.format(language)))
+                    url=_get_static_url('formvalidator/js/language/{}.min.js'.format(language)))
     )
 
 
