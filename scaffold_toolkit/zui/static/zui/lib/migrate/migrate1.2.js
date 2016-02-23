@@ -1,8 +1,8 @@
 /*!
- * ZUI - v1.3.1 - 2015-05-19
+ * ZUI - v1.4.0 - 2016-01-26
  * http://zui.sexy
  * GitHub: https://github.com/easysoft/zui.git 
- * Copyright (c) 2015 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2016 cnezsoft.com; Licensed MIT
  */
 
 /* ========================================================================
@@ -16,39 +16,29 @@
  * ======================================================================== */
 
 
-(function($, window)
-{
+(function($, window) {
     var zui = $.zui;
-    if (zui)
-    {
-        var extendTo = function(name, $orWindow)
-        {
-            if ($.isArray(name))
-            {
-                $.each(name, function(i, n)
-                {
-                    extendTo(n, $orWindow);
+    if(zui) {
+        function extendTo(name, target) {
+            if($.isArray(name)) {
+                $.each(name, function(i, n) {
+                    extendTo(n, target);
                 });
                 return;
             }
 
-            if ($orWindow)
-            {
-                $.extend(window,
-                {
-                    name: zui[name]
-                });
-            }
-            else
-            {
-                $.extend(
-                {
-                    name: zui[name]
-                });
+            var config = {};
+            config[name] = zui[name];
+
+            if(target) {
+                $.extend(target, config);
+            } else {
+                $.extend(config);
             }
         }
 
         extendTo(['uuid', 'callEvent', 'clientLang', 'browser', 'messager', 'Messager', 'showMessager', 'closeModal', 'ajustModalPosition', 'ModalTrigger', 'modalTrigger', 'store']);
-        extendTo(['Color', 'imgReady', 'messager', 'Messager', 'showMessager', 'closeModal', 'ajustModalPosition', 'ModalTrigger', 'modalTrigger', 'store'], true);
+        extendTo(['Color', 'imgReady', 'messager', 'Messager', 'showMessager', 'closeModal', 'ajustModalPosition', 'ModalTrigger', 'modalTrigger', 'store'], window);
     }
 }(jQuery, window));
+
