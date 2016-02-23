@@ -1,3 +1,4 @@
+# coding=utf-8
 from django.forms import forms
 from django.shortcuts import resolve_url
 from django.utils.encoding import force_text
@@ -30,9 +31,9 @@ class TagAutocompleteInput(forms.TextInput):
         $(document).ready(function(){{
         $("#{id_for_label}").select2({{
         placeholder: '{placeholder}',
-            tags:true,
+            tags:{tag_model},
             multiple: true,
-             tokenSeparators: [",", " ",";"],
+            tokenSeparators:{tag_model}?[",", " ",";"]:[],
             ajax: {{
                 url: "{url}",
                 dataType: 'json',
@@ -60,16 +61,18 @@ class TagAutocompleteInput(forms.TextInput):
         js = js.format(id_for_label=force_text(self.id_for_label('id_%s' % name)),
                        url=force_text(suggestion_url),
                        placeholder=attrs.get('placeholder', '') if attrs else '',
+                       tag_model='true' if self.allow_create_tag else 'false',
                        create_choice=""" createSearchChoice: function(term, data) {
                 if ($(data).filter(function() {
-                  return this.text.localeCompare(term) === 0;
+                  return this.text == undefined || this.text.localeCompare(term) === 0;
                 }).length === 0) {
                   return {
                     id: term,
                     text: term
                   };
                 }
-           },""" if create_new_tag else "")
+           },""" if create_new_tag else ""
+                       )
 
         code = "%s %s" % (super(TagAutocompleteInput, self).render(name, value, attrs), js)
         return mark_safe(code)
