@@ -12,6 +12,8 @@ class TagAutocompleteInput(forms.TextInput):
         js = ['javascript/library/select2-3.5.2/select2.min.js',
               'javascript/library/select2-3.5.2/select2_locale_zh-CN.js']
 
+    key_value_splitter = '`~`'
+
     def __init__(self, allow_create_tag=True, suggestion_url=None, attrs=None):
         super(TagAutocompleteInput, self).__init__(attrs=attrs)
         self.allow_create_tag = allow_create_tag
@@ -20,7 +22,7 @@ class TagAutocompleteInput(forms.TextInput):
     def render(self, name, value, attrs=None):
         """
         :param name: 控件名字
-        :param value: 默认值
+        :param value: 默认值. 可以采用 v1_:_text1,v2_:_text2 ...形式
         :param allow_create_tag: 是否创建新的Tag
         :param suggestion_url: 自动完成url
         :param attrs: 附加的html属性
@@ -48,7 +50,13 @@ class TagAutocompleteInput(forms.TextInput):
             initSelection: function (element, callback) {{
                 var data = [];
                 $(element.val().split(",")).each(function (index,name) {{
+                var kv=name.split("{splitter}");
+                if (kv.length==1){{
                     data.push({{id: this, text: name}});
+                }}
+                else{{
+                    data.push({{id:kv[0], text: kv[1]}});
+                }}
                 }});
                 callback(data);
             }},
@@ -71,8 +79,20 @@ class TagAutocompleteInput(forms.TextInput):
                     text: term
                   };
                 }
-           },""" if create_new_tag else ""
+           },""" if create_new_tag else "",
+                       splitter=self.key_value_splitter
                        )
 
         code = "%s %s" % (super(TagAutocompleteInput, self).render(name, value, attrs), js)
         return mark_safe(code)
+
+    def value_from_datadict(self, data, files, name):
+        value = data.get(name)
+        if value and self.key_value_splitter in value:
+            result = []
+            for item in value.split(','):
+                v = item.split(self.key_value_splitter)[0]
+                if v not in result:
+                    result.append(v)
+            value = u','.join(result)
+        return value
