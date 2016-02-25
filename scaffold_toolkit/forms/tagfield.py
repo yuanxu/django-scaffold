@@ -23,8 +23,6 @@ class TagAutocompleteInput(forms.TextInput):
         """
         :param name: 控件名字
         :param value: 默认值. 可以采用 v1_:_text1,v2_:_text2 ...形式
-        :param allow_create_tag: 是否创建新的Tag
-        :param suggestion_url: 自动完成url
         :param attrs: 附加的html属性
         """
         create_new_tag = self.allow_create_tag
