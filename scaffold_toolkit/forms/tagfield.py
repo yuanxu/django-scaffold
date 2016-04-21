@@ -46,17 +46,20 @@ class TagAutocompleteInput(forms.TextInput):
             }},
             {create_choice}
             initSelection: function (element, callback) {{
-                var data = [];
+                var data = [],vals=[];
                 $(element.val().split(",")).each(function (index,name) {{
                 var kv=name.split("{splitter}");
                 if (kv.length==1){{
                     data.push({{id: this, text: name}});
+                    vals.push(this);
                 }}
                 else{{
                     data.push({{id:kv[0], text: kv[1]}});
+                    vals.push(kv[0]);
                 }}
                 }});
                 callback(data);
+                element.val(vals.toString());
             }},
             minimumInputLength: 1,
             triggerChange: true
