@@ -27,7 +27,7 @@ def formvalidator_javascript(framework='bootstrap', language=None):
             framework='<script src="{url}"></script>'.format(
                     url=_get_static_url('formvalidator/js/framework/{}.min.js'.format(framework))),
             language='<script src="{url}"></script>'.format(
-                    url=_get_static_url('formvalidator/js/language/{}.min.js'.format(language)))
+                    url=_get_static_url('formvalidator/js/language/{}.js'.format(language)))
     )
 
 
