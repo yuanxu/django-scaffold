@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>公式编辑器</title>
+    <link rel="stylesheet" type="text/css" href="mathquill-0.9.4/mathquill.css">
+    <link rel="stylesheet" type="text/css" href="style/dialog.css">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+</head>
+<body>
+<div class="workspace">
+<div class="tabMenu">
+    <div class="tabTitle">
+        <ul>
+            <li>
+                常用公式
+            </li>
+            <li>
+                字母
+            </li>
+            <li>
+                符号
+            </li>
+        </ul>
+    </div>
+    <div class="tabContent">
+        <div class="mathBox">
+        </div>
+        <div class="mathBox">
+        </div>
+        <div class="mathBox">
+        </div>
+    </div>
+</div>
+<div>
+    <span class="mathquill-editable" id="formula"></span>
+</div>
+</div>
+<script src="jquery-1.8.3.min.js"></script>
+<script src="mathquill-0.9.4/mathquill.min.js"></script>
+<script src="dialog.js"></script>
+
+<script>
+    formula.dialog.initDialog('formula');
+</script>
+</body>
+</html>

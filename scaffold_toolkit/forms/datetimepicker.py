@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from django.forms.util import flatatt
+from django.forms.utils import flatatt
 from django.forms.widgets import DateTimeInput, TimeInput
 from django.utils import translation
 from django.utils.safestring import mark_safe
