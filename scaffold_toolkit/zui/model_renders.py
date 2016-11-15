@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # 自定义的model renders
 from django.db.models import Model, AutoField
 from django.template import Template
