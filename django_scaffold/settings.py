@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'scaffold_toolkit',
     'scaffold_toolkit.formvalidator',
     'scaffold_toolkit.zui',
-    'scaffold_toolkit.tagging'
+    #'scaffold_toolkit.tagging'
 )
 
 MIDDLEWARE_CLASSES = (

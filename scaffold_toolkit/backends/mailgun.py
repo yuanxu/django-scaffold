@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 import requests
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
@@ -17,7 +17,7 @@ class MailgunBackend(BaseEmailBackend):
         access_key, server_name = (kwargs.pop('access_key', None),
                                    kwargs.pop('server_name', None))
 
-        super(MailgunBackend, self).__init__(fail_silently=fail_silently, *args, **kwargs)
+        super(MailgunBackend, self).__init__(fail_silently=fail_silently, **kwargs)
 
         try:
             self._access_key = access_key or getattr(settings, 'MAILGUN_ACCESS_KEY')
@@ -60,7 +60,7 @@ class MailgunBackend(BaseEmailBackend):
                      files={
                          "message": email_message.message().as_string(),
                      }
-            )
+                     )
         except:
             if not self.fail_silently:
                 raise

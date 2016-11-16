@@ -1,10 +1,8 @@
 # coding=utf-8
-from django.core.urlresolvers import reverse
 from django.forms import Widget, forms
 from django.utils.safestring import mark_safe
 from django.utils.html import escapejs
-
-from venus import settings
+from django.conf import settings
 
 
 class UMEditor(Widget):
@@ -31,7 +29,6 @@ class UMEditor(Widget):
     def _media(self):
 
         css = {'all': ('%s%s' % (self.editorBasePath, 'themes/default/css/umeditor.min.css'),)}
-
 
         return forms.Media(js=('%s%s' % (self.editorBasePath, 'umeditor.config.js'),
                                '%s%s' % (self.editorBasePath, 'umeditor.min.js'),

@@ -13,7 +13,6 @@ from django.views.generic import View, FormView
 from scaffold_toolkit.utilities.misc import get_form_error_message
 import shortuuid
 from braces.views import OrderableListMixin as olm
-from tagging.models import Tag
 
 
 class AjaxFormView(JSONResponseMixin, AjaxResponseMixin, FormView):
