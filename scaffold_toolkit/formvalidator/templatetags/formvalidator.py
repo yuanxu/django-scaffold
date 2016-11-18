@@ -4,6 +4,7 @@ from django import template
 from django.conf import settings
 from django.forms import forms
 from django.forms import fields
+from django.utils.html import format_html
 from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator
 from django.utils.safestring import mark_safe
 from scaffold_toolkit.formvalidator.forms.validators import BaseBV, ImageFileValidator
@@ -22,18 +23,18 @@ def _get_static_url(path):
 def formvalidator_javascript(framework='bootstrap', language=None):
     language = get_language() if language is None else language
     language = 'zh_CN' if language == 'zh_HANS' else language
-    return '{base}{framework}{language}'.format(
-            base='<script src="{url}"></script>'.format(url=_get_static_url('formvalidator/js/formValidation.min.js')),
-            framework='<script src="{url}"></script>'.format(
+    return format_html('{base}{framework}{language}',
+            base=format_html('<script src="{url}"></script>', url=_get_static_url('formvalidator/js/formValidation.min.js')),
+            framework=format_html('<script src="{url}"></script>',
                     url=_get_static_url('formvalidator/js/framework/{}.min.js'.format(framework))),
-            language='<script src="{url}"></script>'.format(
+            language=format_html('<script src="{url}"></script>',
                     url=_get_static_url('formvalidator/js/language/{}.js'.format(language)))
     )
 
 
 @register.simple_tag
 def formvalidator_css():
-    return '<link href="{url}" rel="stylesheet" />'.format(
+    return format_html('<link href="{url}" rel="stylesheet" />',
             url=_get_static_url('formvalidator/css/formValidation.min.css'))
 
 
