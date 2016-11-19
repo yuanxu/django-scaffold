@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+import six, inspect
+
+from functools import wraps
 from django.contrib.auth.forms import ReadOnlyPasswordHashWidget
 
 from django.forms import (
@@ -23,8 +27,20 @@ from .forms import (
     is_widget_with_placeholder, is_widget_required_attribute, FORM_GROUP_CLASS
 )
 
+def need_safe(func):
+    @wraps(func)
+    def _inner(self):
+        rlt = func(self)
+        return mark_safe(rlt)
+    return _inner
 
-class BaseRenderer(object):
+class Meta(type):
+    def __new__(cls, name, bases, attrs):
+        if 'render' in attrs and inspect.isfunction(attrs['render']):
+            attrs['render'] = need_safe(attrs['render'])
+        return super(Meta, cls).__new__(cls, name, bases, attrs)
+
+class BaseRenderer(six.with_metaclass(Meta)):
     def __init__(self, *args, **kwargs):
         self.layout = kwargs.get('layout', '')
         self.form_group_class = kwargs.get(
