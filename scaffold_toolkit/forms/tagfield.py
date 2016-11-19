@@ -1,5 +1,5 @@
 # coding=utf-8
-from django.forms import forms
+from django import forms
 from django.shortcuts import resolve_url
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
