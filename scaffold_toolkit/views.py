@@ -10,6 +10,8 @@ import os
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View, FormView
+from tagging.models import Tag
+
 from scaffold_toolkit.utilities.misc import get_form_error_message
 import shortuuid
 from braces.views import OrderableListMixin as olm
