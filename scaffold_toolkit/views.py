@@ -152,7 +152,9 @@ def tag_suggestion(request):
     @return:
     """
     term = request.GET.get('term')
-
-    tags = [{'id': tag.name, 'text': tag.name}
-            for tag in Tag.objects.filter(name__icontains=term)[:MAX_RESULT]]
+    if term:
+        tags = [{'id': tag.name, 'text': tag.name}
+                for tag in Tag.objects.filter(name__icontains=term)[:MAX_RESULT]]
+    else:
+        tags = []
     return JsonResponse(tags, safe=False)
