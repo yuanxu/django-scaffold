@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.forms.widgets import flatatt
+try:
+    from django.forms.widgets import flatatt
+except:
+    from django.forms.utils import flatatt
 
 from .text import text_value
 

@@ -1,5 +1,11 @@
 # Django 脚手架
 
+# Change log
+
+* 0.5.x 支持Django 2.x
+
+* 0.4.x 支持Django 1.8 - 1.11
+
 # 表单验证
 
 基于[FormValidation](http://formvalidation.io/)。

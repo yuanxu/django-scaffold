@@ -1,5 +1,8 @@
 # coding=utf-8
-from django.conf.urls import url
+try:
+    from django.conf.urls import re_path as url
+except:
+    from django.conf.urls import url
 from django.views.generic import TemplateView
 from scaffold_toolkit.views import kindeditor_upload_file, tag_suggestion
 

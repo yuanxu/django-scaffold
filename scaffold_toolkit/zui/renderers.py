@@ -10,7 +10,12 @@ from django.forms import (
     TextInput, DateInput, FileInput, CheckboxInput,
     ClearableFileInput, Select, RadioSelect, CheckboxSelectMultiple
 )
-from django.forms.extras import SelectDateWidget
+
+try:
+    from django.forms.extras import SelectDateWidget
+except:
+    from django.forms import SelectDateWidget
+
 from django.forms.forms import BaseForm, BoundField
 from django.forms.formsets import BaseFormSet
 from django.utils.html import conditional_escape, strip_tags
@@ -27,18 +32,22 @@ from .forms import (
     is_widget_with_placeholder, is_widget_required_attribute, FORM_GROUP_CLASS
 )
 
+
 def need_safe(func):
     @wraps(func)
     def _inner(self):
         rlt = func(self)
         return mark_safe(rlt)
+
     return _inner
+
 
 class Meta(type):
     def __new__(cls, name, bases, attrs):
         if 'render' in attrs and inspect.isfunction(attrs['render']):
             attrs['render'] = need_safe(attrs['render'])
         return super(Meta, cls).__new__(cls, name, bases, attrs)
+
 
 class BaseRenderer(six.with_metaclass(Meta)):
     def __init__(self, *args, **kwargs):
@@ -377,8 +386,8 @@ class FieldRenderer(BaseRenderer):
 
     def make_input_group(self, html):
         if (
-                    (self.addon_before or self.addon_after) and
-                    isinstance(self.widget, (TextInput, DateInput, Select))
+                (self.addon_before or self.addon_after) and
+                isinstance(self.widget, (TextInput, DateInput, Select))
         ):
             before = '<span class="input-group-addon">{addon}</span>'.format(
                 addon=self.addon_before) if self.addon_before else ''

@@ -3,13 +3,14 @@ from __future__ import unicode_literals
 
 import re
 
-from django.forms.widgets import flatatt
+try:
+    from django.forms.widgets import flatatt
+except:
+    from django.forms.utils import flatatt
 from django.template import Variable, VariableDoesNotExist
 from django.template.base import FilterExpression, kwarg_re, TemplateSyntaxError
 
-
 from .text import text_value
-
 
 # RegEx for quoted string
 QUOTED_STRING = re.compile(r'^["\'](?P<noquotes>.+)["\']$')

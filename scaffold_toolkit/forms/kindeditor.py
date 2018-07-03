@@ -1,7 +1,11 @@
 # coding=utf-8
 from django import forms
 from django.conf import settings
-from django.core.urlresolvers import reverse
+
+try:
+    from django.urls import reverse
+except:
+    from django.core.urlresolvers import reverse
 from django.forms import Textarea
 from django.utils.safestring import mark_safe
 
@@ -53,7 +57,7 @@ class KindEditor(Textarea):
             self._get_toolbar_items()
         ))
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, *args, **kwargs):
         use_require = getattr("settings", "KINDEDITOR_USE_REQUERYJS", False)
         if use_require:
             js_staff = '''<script type="text/javascript">

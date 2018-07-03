@@ -10,6 +10,6 @@ def settings(name):
     return getattr(django_settings, name, "")
 
 
-@register.assignment_tag
+@register.simple_tag()
 def settings_value(name):
     return getattr(django_settings, name, "")
