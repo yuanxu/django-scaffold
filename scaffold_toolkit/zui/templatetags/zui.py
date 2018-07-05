@@ -520,7 +520,7 @@ def zui_messages(context, *args, **kwargs):
         {% zui_messages FIXTHIS %}
 
     """
-    return get_template('zui/messages.html').render(context)
+    return get_template('zui/messages.html').render({'messages': context['messages']})
 
 
 @register.inclusion_tag('zui/zui_pagination.html')
