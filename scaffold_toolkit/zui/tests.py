@@ -99,7 +99,7 @@ def render_template(text, **context_args):
     template = Template("{% load bootstrap3 %}" + text)
     if 'form' not in context_args:
         context_args['form'] = TestForm()
-    return template.render(Context(context_args))
+    return template.render(context_args)
 
 
 def render_formset(formset=None, **context_args):
@@ -185,7 +185,7 @@ class TemplateTest(TestCase):
             'test_bootstrap3_content' +
             '{% endblock %}'
         ))
-        res = template.render(Context({}))
+        res = template.render({})
         self.assertIn('test_bootstrap3_content', res)
 
     def test_javascript_without_jquery(self):

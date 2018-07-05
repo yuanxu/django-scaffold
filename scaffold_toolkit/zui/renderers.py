@@ -135,11 +135,11 @@ class FormsetRenderer(BaseRenderer):
         if formset_errors:
             return get_template(
                 'zui/form_errors.html').render(
-                Context({
+                {
                     'errors': formset_errors,
                     'form': self.formset,
                     'layout': self.layout,
-                })
+                }
             )
         return ''
 
@@ -203,11 +203,11 @@ class FormRenderer(BaseRenderer):
         if form_errors:
             return get_template(
                 'zui/form_errors.html').render(
-                Context({
+                {
                     'errors': form_errors,
                     'form': self.form,
                     'layout': self.layout,
-                })
+                }
             )
         return ''
 
@@ -408,11 +408,11 @@ class FieldRenderer(BaseRenderer):
         if help_text_and_errors:
             help_html = get_template(
                 'zui/field_help_text_and_errors.html'
-            ).render(Context({
+            ).render({
                 'field': self.field,
                 'help_text_and_errors': help_text_and_errors,
                 'layout': self.layout,
-            }))
+            })
             html += '<span class="help-block">{help}</span>'.format(
                 help=help_html)
         return html

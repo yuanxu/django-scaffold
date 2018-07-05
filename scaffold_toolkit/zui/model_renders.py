@@ -82,11 +82,11 @@ class ModelFieldRenderer(BaseRenderer):
         if help_text_and_errors:
             help_html = Template(
                 "{{ help_text_and_errors|join:' ' }}"
-            ).render(Context({
+            ).render({
                 'field': self.field,
                 'help_text_and_errors': help_text_and_errors,
                 'layout': self.layout,
-            }))
+            })
             html += '<span class="help-block">{help}</span>'.format(
                 help=help_html)
         return html
